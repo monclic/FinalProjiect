@@ -19,13 +19,19 @@
       <div class="content">
         <div class="item-list">
           <div class="item" v-for="(item, index) in items" :key="index">
-            <div class="item-image">
-              <!-- <img :src="" alt=""> -->
+            <div class="item-content">
+              <a href="#" class="item-a">
+                <div class="image"
+                  style="background-image:url(../../public/1.jpg);">
+                </div>
+              </a>
+              <div class="item-info">
+                <div class="item-title">{{ item.name }}</div>
+                <div class="item-price">{{ item.tag }}</div>
+              </div>
+
             </div>
-            <div class="item-info">
-              <div class="item-title">{{ item.name }}</div>
-              <div class="item-price">{{ item.tag }}</div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -68,16 +74,17 @@ const items = [{ name: 'Item 1', tag: 'red' },
   align-items: center;
   /* 置于最前 */
   z-index: 999;
+  /* 透明度 */
   opacity: 0.5;
   border-bottom: 1px solid #f5f5f5;
 }
 
 #container {
   display: flex;
-  flex-direction: column;      
+  flex-direction: column;
   /* height: 100%; 添加此属性会导致item-list超出父元素*/
   width: 100%;
-  background-color: beige;
+  /* background-color: beige; */
   /* 水平居中 */
   justify-content: center;
   /* 竖直居中 */
@@ -90,11 +97,11 @@ const items = [{ name: 'Item 1', tag: 'red' },
 
 #main {
   position: relative;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 1050px;
-    background-color: whitesmoke;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 1050px;
+  /* background-color: whitesmoke; */
 }
 
 #footer {
@@ -109,29 +116,32 @@ const items = [{ name: 'Item 1', tag: 'red' },
 
 .menu {
   order: 1;
-    flex-shrink: 0;
-    margin-right: 1.236rem;
-    background-color: aqua;
-    width: 160px;
-    height: auto;
-}
-.nav{
+  flex-shrink: 0;
+  margin-right: 1.236rem;
+  background-color: aqua;
   width: 160px;
-    padding: 0;
-    margin: 0;
-    position: fixed;
-    background-color: blue;
+  height: auto;
 }
-.a1{
+
+.nav {
+  width: 160px;
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  background-color: blue;
+}
+
+.a1 {
   background-color: chartreuse;
 }
+
 .content {
   order: 2;
-    flex-grow: 1;
-    position: relative;
-    overflow: hidden;
-    /* transition: none; */
-    background-color: cadetblue;
+  flex-grow: 1;
+  position: relative;
+  overflow: hidden;
+  /* transition: none; */
+  /* background-color: cadetblue; */
 }
 
 .rank {
@@ -139,7 +149,7 @@ const items = [{ name: 'Item 1', tag: 'red' },
   height: 100px;
   width: 100px;
   display: flex;
-  background-color:yellow;
+  background-color: yellow;
   /* margin-right: 200px; */
   flex-shrink: 0;
   margin-left: 1.236rem;
@@ -147,16 +157,67 @@ const items = [{ name: 'Item 1', tag: 'red' },
 
 .item-list {
   box-sizing: inherit;
-    border-style: solid;
-    border-width: 0;
+  border-style: solid;
+  border-width: 0;
 }
 
 .item {
   margin-bottom: 1.236rem;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+
+}
+
+.item-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-size: 120%;
+  background-position: 0% 50%;
+  /* opacity: .06; */
+}
+
+.item-content {
+  display: flex;
+  height: 11rem;
+  padding: 0.618rem;
+  overflow: hidden;
+  background-color: var(--module-bg);
+  transition: background-color .1s;
+}
+
+.item-a {
+  display: flex;
+  height: 11rem;
+  padding: 0.618rem;
+  overflow: hidden;
+  background-color: var(--module-bg);
+  transition: background-color .1s;
+}
+
+.image {
+  height: 100%;
+  min-width: 100%;
+  width: 189px;
+  max-width: 189px;
+  border-color: transparent;
+  background-color: var(--module-bg-darker-2);
+  background-size: cover;
+  background-position: center;
+  opacity: 1;
+  transform: translate(0);
+  transition: transform .25s, opacity .25s;
 }
 
 .item-info {
-  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 9.764rem;
+  padding-right: 0.309rem;
 }
 
 .item-title {
@@ -173,5 +234,4 @@ const items = [{ name: 'Item 1', tag: 'red' },
 .item-image {
   height: auto;
   background-color: chartreuse;
-}
-</style>
+}</style>
