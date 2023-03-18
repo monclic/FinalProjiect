@@ -169,16 +169,6 @@ const items = [{ name: 'Item 1', tag: 'red' },
 
 }
 
-.item-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  background-size: 120%;
-  background-position: 0% 50%;
-  /* opacity: .06; */
-}
-
 .item-content {
   display: flex;
   height: 11rem;
