@@ -1,67 +1,57 @@
 <template>
-  <!-- 把header独立出来放在app.vue里 -->
   <div id="container">
-    <header class="header">
+    <header id="header">
       <div><a href="#">Link 1</a></div>
       <div><a href="#">Link 1</a></div>
     </header>
 
     <main id="main">
-      <!-- 目录 -->
-      <div class="menu">
-        <div class="nav">
-          <a class="a1">
+      <!-- nav -->
+      <div id="nav">
+        <nav class="nav-list">
+          <a class="nav-item">
+
             <span>111111</span>
+
           </a>
-        </div>
+        </nav>
       </div>
-      <!-- 内容 -->
-      <div class="content">
-        <div class="item-list">
-          <div class="item" v-for="(item, index) in items" :key="index">
-            <div class="item-content">
-              <a href="#" class="item-a">
-                <div class="image"
-                  style="background-image:url(../../public/1.jpg);">
-                </div>
-              </a>
-              <div class="item-info">
-                <div class="item-title">{{ item.name }}</div>
-                <div class="item-price">{{ item.tag }}</div>
-              </div>
-
-            </div>
-
-          </div>
+      <!-- content -->
+      <div id="content">
+        <!-- for  -->
+        <!-- div.item  -->
+        <!-- template  -->
+        <!-- /for -->
+        <Section/>
+        <Section/>
         </div>
-      </div>
-      <!-- 排行 -->
-      <div class="rank"></div>
+
+     
     </main>
-
 
     <footer id="footer"></footer>
   </div>
 </template>
-  
 
 <script lang='ts' setup>
-const items = [{ name: 'Item 1', tag: 'red' },
-{ name: 'Item 2', tag: 'yellow' },
-{ name: 'Item 3', tag: 'blue' },
-{ name: 'Item 1', tag: 'red' },
-{ name: 'Item 2', tag: 'yellow' },
-{ name: 'Item 3', tag: 'blue' },
-{ name: 'Item 1', tag: 'red' },
-{ name: 'Item 2', tag: 'yellow' },
-{ name: 'Item 3', tag: 'blue' },
-{ name: 'Item 1', tag: 'red' },
-{ name: 'Item 2', tag: 'yellow' },
-{ name: 'Item 3', tag: 'blue' }]
+import Section from './section.vue'
 </script>
 
 <style scoped>
-.header {
+#container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* 水平居中 */
+  justify-content: center;
+  /* 竖直居中 */
+  align-items: center;
+  padding-top: 4.6rem;
+  background-color: #e7e7e7;
+}
+
+#header {
+  height: 3.6rem;
   /* 固定 */
   position: fixed;
   top: 0;
@@ -79,149 +69,72 @@ const items = [{ name: 'Item 1', tag: 'red' },
   border-bottom: 1px solid #f5f5f5;
 }
 
-#container {
-  display: flex;
-  flex-direction: column;
-  /* height: 100%; 添加此属性会导致item-list超出父元素*/
-  width: 100%;
-  /* background-color: beige; */
-  /* 水平居中 */
-  justify-content: center;
-  /* 竖直居中 */
-  align-items: center;
-  padding-top: 3rem;
-  /* margin: 0;
-  padding: 0; */
-
-}
-
 #main {
   position: relative;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 1050px;
-  /* background-color: whitesmoke; */
-}
-
-#footer {
-  background-color: #333;
-  color: #fff;
-  height: 60px;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0 100px;
 }
 
-.menu {
+#nav {
   order: 1;
   flex-shrink: 0;
   margin-right: 1.236rem;
-  background-color: aqua;
-  width: 160px;
   height: auto;
+  width: 160px;
+  overflow: hidden;
 }
 
-.nav {
+.nav-list {
   width: 160px;
   padding: 0;
   margin: 0;
   position: fixed;
-  background-color: blue;
 }
 
-.a1 {
-  background-color: chartreuse;
-}
-
-.content {
-  order: 2;
-  flex-grow: 1;
+.nav-item {
+  /* 解决子元素超出父元素的范围的问题 */
+  /* box-sizing: border-box; */
+  display: flex;
+  align-items: center;
   position: relative;
-  overflow: hidden;
-  /* transition: none; */
-  /* background-color: cadetblue; */
-}
-
-.rank {
-  order: 3;
-  height: 100px;
-  width: 100px;
-  display: flex;
-  background-color: yellow;
-  /* margin-right: 200px; */
-  flex-shrink: 0;
-  margin-left: 1.236rem;
-}
-
-.item-list {
-  box-sizing: inherit;
-  border-style: solid;
-  border-width: 0;
-}
-
-.item {
-  margin-bottom: 1.236rem;
-  position: relative;
-  border-radius: 4px;
-  overflow: hidden;
-
-}
-
-.item-content {
-  display: flex;
-  height: 11rem;
-  padding: 0.618rem;
-  overflow: hidden;
-  background-color: var(--module-bg);
-  transition: background-color .1s;
-}
-
-.item-a {
-  display: flex;
-  height: 11rem;
-  padding: 0.618rem;
-  overflow: hidden;
-  background-color: var(--module-bg);
-  transition: background-color .1s;
-}
-
-.image {
-  height: 100%;
-  min-width: 100%;
-  width: 189px;
-  max-width: 189px;
-  border-color: transparent;
-  background-color: var(--module-bg-darker-2);
-  background-size: cover;
-  background-position: center;
-  opacity: 1;
-  transform: translate(0);
-  transition: transform .25s, opacity .25s;
-}
-
-.item-info {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 9.764rem;
-  padding-right: 0.309rem;
-}
-
-.item-title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.item-price {
-  font-size: 14px;
   color: red;
+  background-color: #e4e1e122;
+  width: 100%;
+  /* em 单位是相对于当前元素的字体大小来计算的长度单位。如果一个元素没有定义字体大小，它将继承父元素的字体大小。 */
+  height: 3em;
+  margin-bottom: 0.618rem;
+  padding: 0 1.236rem;
+  border-radius: 3px;
+  overflow: hidden;
+  /* 用于去除文本的下划线或其他修饰效果 */
+  text-decoration: none;
+  /* 用于控制字母之间的距离 */
+  letter-spacing: .5px;
+  /* will-change用于告知浏览器某个元素将要发生改变，以便浏览器在元素状态改变之前进行优化，提升性能。 */
+  will-change: background-color;
+  transition: background-color .06s;
 }
 
-.item-image {
-  height: auto;
-  background-color: chartreuse;
-}</style>
+.nav-item:hover {
+  /* 悬停变色 */
+  background-color: #fff;
+}
+
+.nav-info {
+  display: flex;
+  overflow: hidden;
+  height: 2.3rem;
+  width: 100%;
+  background-color: #f3f3f2;
+  transition: background-color .1s;
+}
+
+#content {
+  order: 2;  
+  position: relative;
+  overflow: hidden;
+}
+</style>
