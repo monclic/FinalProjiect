@@ -55,6 +55,7 @@ const scrollToSection = (index: number) => {
   if(pageScroll){
     window.scrollTo({top:(<HTMLElement>pageScroll.children[index]).offsetTop,behavior:"smooth"});  
 };
+}
 
 // 2.监听页面滚动事件
 const handleScroll = () => {
