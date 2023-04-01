@@ -1,23 +1,24 @@
 <template>
-    <div class="section">
-        <div class="section-id">111</div>
-        <div class="section-more">
-          <span>查看更多</span>
-        </div>
+  <div class="section">
+    <div class="section-id">标题{{ message }}</div>
+    <div class="section-more">
+      <span>查看更多</span>
     </div>
+  </div>
+  <div class="item-list-wrapper">
     <div class="item-list" v-for="(item, index) in items" :key="index">
-        <div class="item-content">
-            <a href="#" class="item-a">
-                <div class="image" style="background-image:url(../../public/1.jpg);">
-                </div>                   
-            </a>
-            <div class="item-info">
-                <div class="item-title">{{ item.name }}</div>
-                <div class="item-meta">{{ item.tag }}</div>
-            </div>
-
+      <div class="item-content">
+        <a href="#" class="item-a">
+          <div class="image" style="background-image:url(../../public/1.jpg);">
+          </div>
+        </a>
+        <div class="item-info">
+          <div class="item-title">{{ item.name }}</div>
+          <div class="item-meta">{{ item.tag }}</div>
         </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script lang='ts'>
@@ -25,16 +26,22 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'Section',
-  setup(){
+  props: {
+    message: {
+      type: String,
+      required: true
+    }
+  },
+  setup() {
     const items = [{ name: 'Item 1', tag: 'red' },
-{ name: 'Item 2', tag: 'yellow' },
-{ name: 'Item 3', tag: 'blue' },
-{ name: 'Item 1', tag: 'red' },
-{ name: 'Item 2', tag: 'yellow' },
-{ name: 'Item 3', tag: 'blue' },
-{ name: 'Item 1', tag: 'red' },
-{ name: 'Item 2', tag: 'yellow' }];
-return {
+    { name: 'Item 2', tag: 'yellow' },
+    { name: 'Item 3', tag: 'blue' },
+    { name: 'Item 1', tag: 'red' },
+    { name: 'Item 2', tag: 'yellow' },
+    { name: 'Item 3', tag: 'blue' },
+    { name: 'Item 1', tag: 'red' },
+    { name: 'Item 2', tag: 'yellow' }];
+    return {
       items
     };
   }
@@ -43,22 +50,24 @@ return {
 </script>
 
 <style scoped>
-.section{
+.section {
   display: flex;
   justify-content: space-between;
-  flex-grow: 1;
   margin-bottom: 0.8rem;
   padding-right: 50px;
 }
-.section-id{
+
+.section-id {
   font-size: 1.61rem;
-  font-weight: bold;  
-  color: #918484;
+  font-weight: bold;
+  color: #0088f5;
 }
-.section-id:hover{
-  color: #c1b2a3;
+
+.section-id:hover {
+  color: #0088f5;
 }
-.section-more{ 
+
+.section-more {
   height: 2.7rem;
   width: 7.7rem;
   box-sizing: inherit;
@@ -66,61 +75,77 @@ return {
   border: 0 solid;
   border-radius: 10px;
   display: flex;
-   /* 水平居中 */
-   justify-content: center;
+  /* 水平居中 */
+  justify-content: center;
   /* 竖直居中 */
-  align-items: center;  
-  /* align-items: flex-end; */
-  
+  align-items: center;
+
+  transition: background-color 0.2s;
+
 }
-.section-more span{
+
+.section-more span {
   font-size: 1.1rem;
-  font-weight: 1000;
-  color: #4e3434a0;
+  font-weight: 900;
+  color: #0088f5;
+  transition: color 0.2s;
 }
-.section-more:hover{
-  background-color: #f4f3f3f9;
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
+
+.section-more:hover {
+  background-color: #0088f5;
 }
-.section-more:hover span{
-  color: #c1b2a3;
+
+.section-more:hover span {
+  color: #f4f3f3f9;
 }
+
 /* --- */
+.item-list-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
 .item-list {
   /* 将一个元素同时设置为行内（inline）和块级（block）元素的特性。它使元素既可以像行内元素一样排列在一行中，又可以像块级元素一样具有宽度、高度、内边距和外边距。 */
-  display: inline-block;
+  /* display: inline-block; */
+  display: flex;
+  flex: 0 0 auto;
+  width: 25%;
+  max-width: 100%;
+  padding-right: calc(1rem* .5);
+  padding-left: calc(1rem * .5);
   margin-bottom: 1.236rem;
-  margin-right: 0.76rem;
-  position: relative;
   border-radius: 4px;
   overflow: hidden;
   /* 悬停后浮起 */
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
+
+
+
+.item-content {
+  /* flex-grow放大比例 flex-shrink缩小 flex-basis初始宽度 */
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;  
+  margin-top: var(1rem);  
+  overflow: hidden;
+  /* background-color: #f3f3f2; */
+  transition: background-color .1s;
+  /* 水平居中 */
+  justify-content: center;
+ /* 悬停后浮起 */
+ transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
 /* 悬停后浮起 */
-.item-list:hover{
+.item-content:hover {
   /* 浮起8px */
   transform: translateY(-8px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
-.item-content {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  /* height: 11rem; */
-  width: 265px;
-  /* padding: 0.618rem; */
-  overflow: hidden;
-  background-color: #f3f3f2;
-  transition: background-color .1s;
-  /* 水平居中 */
-  justify-content: center;
-  /* 竖直居中 */
-  /* align-items: center; */
-}
-
-
 .item-a {
   position: absolute;
   flex-shrink: 0;
@@ -144,17 +169,19 @@ return {
   transition: transform .25s, opacity .25s;
   z-index: 20;
 }
-.image::after{
+
+.image::after {
   pointer-events: none;
-    content: "";
-    position: absolute;
-    z-index: 35;
-    top: 13%;
-    left: 0;
-    height: 120%;
-    width: 100%;
-    background: linear-gradient(180deg, rgba(243, 243, 242, 0) 0, rgba(243, 243, 242, 0.013) 8.1%, rgba(243, 243, 242, 0.049) 15.5%, rgba(243, 243, 242, 0.104) 22.5%, rgba(243, 243, 242, 0.175) 29%, rgba(243, 243, 242, 0.259) 35.3%, rgba(243, 243, 242, 0.352) 41.2%, rgba(243, 243, 242, 0.45) 47.1%, rgba(243, 243, 242, 0.55) 52.9%, rgba(243, 243, 242, 0.648) 58.8%, rgba(243, 243, 242, 0.741) 64.7%, rgba(243, 243, 242, 0.825) 71%, rgba(243, 243, 242, 0.896) 77.5%, rgba(243, 243, 242, 1) 84.5%, rgba(243, 243, 242, 1) 91.9%, #e7e7e7);
+  content: "";
+  position: absolute;
+  z-index: 35;
+  top: 13%;
+  left: 0;
+  height: 120%;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(243, 243, 242, 0) 0, rgba(243, 243, 242, 0.013) 8.1%, rgba(243, 243, 242, 0.049) 15.5%, rgba(243, 243, 242, 0.104) 22.5%, rgba(243, 243, 242, 0.175) 29%, rgba(243, 243, 242, 0.259) 35.3%, rgba(243, 243, 242, 0.352) 41.2%, rgba(243, 243, 242, 0.45) 47.1%, rgba(243, 243, 242, 0.55) 52.9%, rgba(243, 243, 242, 0.648) 58.8%, rgba(243, 243, 242, 0.741) 64.7%, rgba(243, 243, 242, 0.825) 71%, rgba(243, 243, 242, 0.896) 77.5%, rgba(243, 243, 242, 1) 84.5%, rgba(243, 243, 242, 1) 91.9%, #e7e7e7);
 }
+
 .item-info {
   position: absolute;
   flex-grow: 1;
@@ -191,7 +218,7 @@ return {
   /* 如果一个单词太长无法放在一行内，就将整个单词移到下一行，不允许将单词拆分成两行。 */
   word-wrap: normal;
 }
-.item-list:hover .item-info{
+
+.item-list:hover .item-info {
   bottom: 3rem;
-}
-</style>
+}</style>

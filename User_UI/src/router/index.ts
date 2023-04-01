@@ -13,6 +13,9 @@ const routes: Array<RouteRecordRaw> = [{
 },{
     path: '/section',
     component: () => import('../components/section.vue')
+},{
+    path: '/testVV',
+    component: () => import('../components/testVV.vue')
 }
 ]
 

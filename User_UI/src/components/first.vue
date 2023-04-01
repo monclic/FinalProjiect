@@ -8,13 +8,7 @@
     <main id="main">
       <!-- nav -->
       <div id="nav">
-        <nav class="nav-list">
-          <a class="nav-item">
-
-            <span>111111</span>
-
-          </a>
-        </nav>
+        <Nav/>
       </div>
       <!-- content -->
       <div id="content">
@@ -22,8 +16,9 @@
         <!-- div.item  -->
         <!-- template  -->
         <!-- /for -->
-        <Section/>
-        <Section/>
+        <div v-for="(message,index) in messages" :key="index" :id="message" class="section-wrapper">
+        <Section :message="message"/>
+      </div>       
         </div>
 
      
@@ -35,6 +30,9 @@
 
 <script lang='ts' setup>
 import Section from './section.vue'
+import Nav from './nav.vue'
+
+const messages=['one','two','three','four','five']
 </script>
 
 <style scoped>
@@ -51,22 +49,25 @@ import Section from './section.vue'
 }
 
 #header {
-  height: 3.6rem;
+  height: 3.83rem;
+  width: 100%;
   /* 固定 */
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   padding: 10px 300px 10px;
-  background-color: #f5f5f5;
+  background-color: rgba(255, 255, 255, 0.5); /* 白色，透明度 50% */
   display: flex;
   justify-content: space-between;
   align-items: center;
   /* 置于最前 */
   z-index: 999;
   /* 透明度 */
-  opacity: 0.5;
-  border-bottom: 1px solid #f5f5f5;
+  /* opacity: 0.5; */
+  border-bottom: 1px solid #dedede;
+  /* 模糊化  ！！使用此效果不能使用opacity，只能设置background-color为半透明色 */
+    backdrop-filter: blur(5px);
 }
 
 #main {
@@ -83,58 +84,16 @@ import Section from './section.vue'
   flex-shrink: 0;
   margin-right: 1.236rem;
   height: auto;
-  width: 160px;
+  width: 140px;
   overflow: hidden;
 }
 
-.nav-list {
-  width: 160px;
-  padding: 0;
-  margin: 0;
-  position: fixed;
-}
 
-.nav-item {
-  /* 解决子元素超出父元素的范围的问题 */
-  /* box-sizing: border-box; */
-  display: flex;
-  align-items: center;
-  position: relative;
-  color: red;
-  background-color: #e4e1e122;
-  width: 100%;
-  /* em 单位是相对于当前元素的字体大小来计算的长度单位。如果一个元素没有定义字体大小，它将继承父元素的字体大小。 */
-  height: 3em;
-  margin-bottom: 0.618rem;
-  padding: 0 1.236rem;
-  border-radius: 3px;
-  overflow: hidden;
-  /* 用于去除文本的下划线或其他修饰效果 */
-  text-decoration: none;
-  /* 用于控制字母之间的距离 */
-  letter-spacing: .5px;
-  /* will-change用于告知浏览器某个元素将要发生改变，以便浏览器在元素状态改变之前进行优化，提升性能。 */
-  will-change: background-color;
-  transition: background-color .06s;
-}
-
-.nav-item:hover {
-  /* 悬停变色 */
-  background-color: #fff;
-}
-
-.nav-info {
-  display: flex;
-  overflow: hidden;
-  height: 2.3rem;
-  width: 100%;
-  background-color: #f3f3f2;
-  transition: background-color .1s;
-}
 
 #content {
   order: 2;  
   position: relative;
   overflow: hidden;
+  flex-grow: 1;
 }
 </style>
