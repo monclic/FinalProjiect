@@ -1,4 +1,5 @@
 <template>
+<!-- 参考：https://blog.csdn.net/m0_68324632/article/details/125988195 -->
   <div class="container">
     <nav>
       <ul>
@@ -55,6 +56,7 @@ const scrollToSection = (index: number) => {
     window.scrollTo({top:(<HTMLElement>pageScroll.children[index]).offsetTop,behavior:"smooth"});  
 };
 }
+
 // 2.监听页面滚动事件
 const handleScroll = () => {
   //  获取页面上所有的 section 元素
