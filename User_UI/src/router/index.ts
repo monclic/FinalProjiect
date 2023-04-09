@@ -9,7 +9,16 @@ const routes: Array<RouteRecordRaw> = [{
     component: () => import('../components/first.vue')
 },{
     path: '/test',
-    component: () => import('../components/test.vue')
+    component: () => import('../components/test.vue'),
+    children: [
+        {
+            path: 'testVV',
+            component: () => import('../components/testVV.vue')
+        },{
+            path: 'VV',
+            component: () => import('../components/testVV.vue')
+        }        
+      ]
 },{
     path: '/section',
     component: () => import('../components/section.vue')
