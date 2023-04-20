@@ -1,10 +1,5 @@
 <template>
   <div id="container">
-    <header id="header">
-      <div><a href="#">Link 1</a></div>
-      <div><a href="#">Link 1</a></div>
-    </header>
-
     <main id="main">
       <!-- nav -->
       <div id="nav">

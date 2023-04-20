@@ -1,11 +1,14 @@
 <template>
   <div id="app">
+    <header id="header">
+      <div><a href="#">Link 1</a></div>
+      <div><a href="#">Link 1</a></div>
+    </header>
     <router-view></router-view>
   </div>
 </template>
 
 <script lang='ts' setup>
-
 </script>
 
 <style>
@@ -45,4 +48,27 @@ html {
   font-size: inherit;
   line-height: inherit;
   background-repeat: no-repeat;
-}</style>
+}
+
+#header {
+  height: 3.83rem;
+  width: 100%;
+  /* 固定 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 300px 10px;
+  background-color: rgba(255, 255, 255, 0.5); /* 白色，透明度 50% */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* 置于最前 */
+  z-index: 999;
+  /* 透明度 */
+  /* opacity: 0.5; */
+  border-bottom: 1px solid #dedede;
+  /* 模糊化  ！！使用此效果不能使用opacity，只能设置background-color为半透明色 */
+    backdrop-filter: blur(5px);
+}
+</style>

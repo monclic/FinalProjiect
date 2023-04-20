@@ -5,12 +5,12 @@
       <span>查看更多</span>
     </div>
   </div>
+  
   <div class="item-list-wrapper">
     <div class="item-list" v-for="(item, index) in items" :key="index">
       <div class="item-content">
         <a href="#" class="item-a">
-          <div class="image" style="background-image:url(../../public/1.jpg);">
-          </div>
+          <div class="image" :style="{ backgroundImage: 'url(' + item.img + ')' }"></div>
         </a>
         <div class="item-info">
           <div class="item-title">{{ item.name }}</div>
@@ -33,14 +33,14 @@ export default defineComponent({
     }
   },
   setup() {
-    const items = [{ name: 'Item 1', tag: 'red' },
-    { name: 'Item 2', tag: 'yellow' },
-    { name: 'Item 3', tag: 'blue' },
-    { name: 'Item 1', tag: 'red' },
-    { name: 'Item 2', tag: 'yellow' },
-    { name: 'Item 3', tag: 'blue' },
-    { name: 'Item 1', tag: 'red' },
-    { name: 'Item 2', tag: 'yellow' }];
+    const items = [{ name: 'Item 1', tag: 'red' ,img: '1.jpg'},
+    { name: 'Item 2', tag: 'yellow' ,img: '1.jpg'},
+    { name: 'Item 3', tag: 'blue' ,img: '1.jpg'},
+    { name: 'Item 1', tag: 'red' ,img: '1.jpg'},
+    { name: 'Item 2', tag: 'yellow' ,img: '1.jpg'},
+    { name: 'Item 3', tag: 'blue' ,img: '1.jpg'},
+    { name: 'Item 1', tag: 'red' ,img: '1.jpg'},
+    { name: 'Item 2', tag: 'yellow' ,img: '23.png'}];
     return {
       items
     };
@@ -118,8 +118,6 @@ export default defineComponent({
   margin-bottom: 1.236rem;
   border-radius: 4px;
   overflow: hidden;
-  /* 悬停后浮起 */
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 
