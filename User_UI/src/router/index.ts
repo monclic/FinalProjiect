@@ -1,4 +1,5 @@
 //引入路由对象
+import path from 'path'
 import { createRouter, createWebHistory, createWebHashHistory, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 
 //路由数组的类型 RouteRecordRaw
@@ -6,7 +7,13 @@ import { createRouter, createWebHistory, createWebHashHistory, createMemoryHisto
 // 每个路由都需要映射到一个组件。
 const routes: Array<RouteRecordRaw> = [{
     path: '/',
-    component: () => import('../components/first.vue')
+    component: () => import('../components/first.vue'),
+    children:[
+       {
+        path:'shorts',
+        component: () => import('../components/Short/shorts.vue')
+       }
+    ]
 },{
     path: '/test',
     component: () => import('../components/test.vue'),
@@ -26,8 +33,8 @@ const routes: Array<RouteRecordRaw> = [{
     path: '/testVV',
     component: () => import('../components/testVV.vue')
 },{
-    path: '/shorts',
-    component: () => import('../components/shorts.vue')
+    path: '/sh1orts',
+    component: () => import('../components/Short/shorts.vue')
 }
 ]
 

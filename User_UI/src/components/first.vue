@@ -11,9 +11,10 @@
         <!-- div.item  -->
         <!-- template  -->
         <!-- /for -->
-        <div v-for="(message,index) in messages" :key="index" :id="message" class="section-wrapper">
+        <!-- <div v-for="(message,index) in messages" :key="index" :id="message" class="section-wrapper">
         <Section :message="message"/>
-      </div>       
+      </div>        -->
+      <router-view></router-view>
         </div>
 
      
@@ -26,6 +27,7 @@
 <script lang='ts' setup>
 import Section from './section.vue'
 import Nav from './nav.vue'
+import shorts from './Short/shorts.vue'
 
 const messages=['one','two','three','four','five']
 </script>
