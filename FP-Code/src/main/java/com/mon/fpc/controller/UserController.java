@@ -71,8 +71,8 @@ public class UserController extends BaseController {
             //设置新token
             RedisUtil.set(RedisKeyEnum.USER_TOKEN,  user.getUserId().toString(), token,15, TimeUnit.DAYS);
             RedisUtil.set(RedisKeyEnum.USER_TOKEN_INDEX, user.getUserId().toString(), token, 15, TimeUnit.DAYS);
-//            LoginUserHolder.set(customer);
-//            System.out.println(LoginUserHolder.get(Customer.class).getId());
+            LoginUserHolder.set(user);
+//            System.out.println(LoginUserHolder.get(User.class).getUserId());
 
 
             return success(res);
@@ -135,6 +135,7 @@ public class UserController extends BaseController {
 
         User user = new User();
         user.setUserEmail(registerDTO.getEmail());
+        //TODO 加盐
         user.setUserPwd(BCrypt.hashpw(registerDTO.getPwd()));
         userService.save(user);
         return success();
