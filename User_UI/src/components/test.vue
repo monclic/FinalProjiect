@@ -1,78 +1,121 @@
 <template>
-  <div class="scrollable" ref="scrollable" @scroll="handleScroll">
-    <div v-for="(item, index) in items" :key="index" class="item">
-      {{ item }}
-    </div>
-    <div v-if="loading" class="loading">Loading...</div>
-  </div>
+  <el-upload
+    v-model:file-list="fileList"
+    class="upload-demo"
+    action=""
+    :http-request="uploadImage"
+    multiple
+    :on-preview="handlePreview"
+    :on-remove="handleRemove"
+    :before-remove="beforeRemove"
+    :limit="3"
+    :on-exceed="handleExceed"
+  >
+    <el-button type="primary">Click to upload</el-button>
+    <template #tip>
+      <div class="el-upload__tip">
+        jpg/png files with a size less than 500KB.
+      </div>
+    </template>
+  </el-upload>
+
+  <div class="bili-pics-uploader__add" @click="picsUplod"></div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import http from '../utils/http';
 
-const scrollable = ref<HTMLDivElement | null>(null);
-const items = reactive(Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`));
-const loading = ref(false);
-const handleScroll = () => {
-    if (
-      scrollable.value &&
-      scrollable.value.scrollTop + scrollable.value.clientHeight >= scrollable.value.scrollHeight - 10
-    ) {
-      if (!loading.value) {
-        loading.value = true;
-        setTimeout(() => {
-          items.push(`Item ${items.length + 1}`);
-          loading.value = false;
-        }, 500); //加载动画5s
-      }
-    }
-  };
+const fileList = ref([]);
 
-onMounted(() => {
-  scrollable.value?.addEventListener('scroll', handleScroll);
+const handleRemove = (file, uploadFiles) => {
+  console.log(file, uploadFiles);
+};
 
-  return () => {
-    scrollable.value?.removeEventListener('scroll', handleScroll);
-  };
-});
+const handlePreview = (uploadFile) => {
+  console.log(uploadFile);
+};
+
+const handleExceed = (files, uploadFiles) => {
+  ElMessage.warning(
+    `The limit is 3, you selected ${files.length} files this time, add up to ${
+      files.length + uploadFiles.length
+    } totally`
+  );
+};
+
+const beforeRemove = (uploadFile, uploadFiles) => {
+  return ElMessageBox.confirm(`Cancel the transfer of ${uploadFile.name} ?`).then(
+    () => true,
+    () => false
+  );
+};
+
+const uploadImage = async (params) => {
+  const img = params.file;
+  const formData = new FormData();
+  formData.append('file', img);
+  try {
+    const res = await http.post('/user/Upload', formData);
+    console.log(res);
+  } catch (error) {
+    console.error(error);
+  }
+};
+// 图片
+interface Iamge {
+    order: number,
+    url: String;
+}
+// 图片列表
+const images = ref<Iamge[]>([])
+const picsUplod = () => {
+    uploadImage1(images.value.length);
+}
+async function uploadImage1(index: number) {
+  try {
+    // Open file picker and get file handle
+    const [fileHandle] = await window.showOpenFilePicker({
+      types: [{
+        accept: {
+          'image/*': ['.png', '.gif', '.jpeg', '.jpg', '.webp']
+        }
+      }]
+    });
+
+    // Get file data
+    const file = await fileHandle.getFile();
+
+    // Create FormData object
+    const formData = new FormData();
+    formData.append('image', file);
+
+    // Make POST request to API endpoint
+    const response = await fetch('/user/Upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    // Handle response
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 </script>
-
-<style scoped>
-.scrollable {
-  height: 300px;
-  overflow-y: auto;
-  padding-bottom: 10px;
+<style>
+.bili-pics-uploader__add {
+    border: 2px dashed #cbcbcb;
+    border-radius: 4px;
+    cursor: pointer;
+    height: 92px;
+    margin-bottom: 10px;
+    position: relative;
+    transition: border-color .3s;
+    width: 92px;
+    user-select: none;
 }
-
-.item {
-  height: 100px;
-  border: 1px solid gray;
-  margin: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.loading {
-  text-align: center;
-  margin: 10px;
-  font-size: 20px;
-  color: gray;
-}
-/* 隐藏滚动条 */
-::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-/* 隐藏滚动条上的滑块 */
-::-webkit-scrollbar-thumb {
-  display: none;
-}
-
-/* 隐藏滚动条的背景 */
-::-webkit-scrollbar-track {
-  display: none;
-}
-
 </style>
