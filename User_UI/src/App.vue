@@ -1,14 +1,29 @@
 <template>
   <div id="app">
-    <header id="header">
+    <!-- <header id="header">
       <div><a href="#">Link 1</a></div>
-      <div><a href="#">Link 1</a></div>
-    </header>
+      <div @click="login" style="cursor: pointer;">Login</div>
+    </header> -->
     <router-view></router-view>
   </div>
 </template>
 
 <script lang='ts' setup>
+import http from './utils/http'
+
+const login=()=>{
+  const formData= new FormData()
+  formData.append('email','111@1.com')
+  formData.append('pwd','111111')
+  let params={email:'111@1.com',pwd:'111111'}
+
+http.post('/user/AccountLogin',params)
+.then(data=>{
+  localStorage.setItem('token',data.token)
+})
+
+  
+}
 </script>
 
 <style>

@@ -2,4 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mon.fpc.mapper.ShortsMapper">
 
+    <select id="getList" resultType="com.mon.fpc.vo.Item.ShortListItem">
+        select s.id,
+               s.short_content,
+               s.create_time,
+               s.images,
+               s.likes,
+               s.replys,
+               u.user_nickname as username
+        from shorts s,
+             user u
+        where s.article_status = 1
+          and s.user_id = u.user_id
+            ${ew.customSqlSegment}
+    </select>
 </mapper>

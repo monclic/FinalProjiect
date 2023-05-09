@@ -6,12 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.entity.User;
 import com.mon.fpc.core.BaseController;
 import com.mon.fpc.core.Resp;
+import com.mon.fpc.dto.LikesDTO;
 import com.mon.fpc.entity.Likes;
 import com.mon.fpc.entity.Shorts;
 import com.mon.fpc.utils.LoginUserHolder;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +38,10 @@ public class LikesController extends BaseController {
 
     @ApiOperation(value = "点赞Shorts 1-Longs 2-Shorts")
     @PostMapping("/setLike")
-    public Resp setLike(Integer type, Integer contextId) {
+    public Resp setLike(@RequestBody LikesDTO likesDTO) {
+        Integer type = likesDTO.getType();
+        Integer contextId = likesDTO.getContextId();
+
         Integer userId = LoginUserHolder.get(User.class).getUserId();
         boolean contextExists = contextExist(type,contextId);
         if (!contextExists) return error("该内容不存在");
@@ -62,7 +67,10 @@ public class LikesController extends BaseController {
 
     @ApiOperation(value = "取消点赞Shorts 1-Longs 2-Shorts")
     @PostMapping("/cancelLike")
-    public Resp cancelLike(Integer type, Integer contextId) {
+    public Resp cancelLike(@RequestBody LikesDTO likesDTO) {
+        Integer type = likesDTO.getType();
+        Integer contextId = likesDTO.getContextId();
+
         boolean contextExist = contextExist(type, contextId);
         if (!contextExist) return success();
 

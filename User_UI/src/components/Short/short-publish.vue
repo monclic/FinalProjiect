@@ -1,65 +1,66 @@
 <template>
     <!-- <el-dialog class="dialog" v-model="dialogTableVisible" style="  z-index: 999;" title=""> -->
-        <!-- <div  v-show="dialogTableVisible"></div> -->
-        <!-- 编辑区 -->
-        <div class="bili-dyn-publishing__input">
-            <div class="bili-rich-textarea" style="max-height: 180px;">
+    <!-- <div  v-show="dialogTableVisible"></div> -->
+    <!-- 编辑区 -->
+    <div class="bili-dyn-publishing__input">
+        <div class="bili-rich-textarea" style="max-height: 180px;">
 
-                <div contenteditable="true" class="bili-rich-textarea__inner" @paste="handlePaste" ref="editor"
-                    @mouseup="saveSelection" @keyup="saveSelection" @click="saveSelection"
-                    style="font-size: 15px; line-height: 24px; min-height: 24px;"></div>
-            </div>
+            <div contenteditable="true" class="bili-rich-textarea__inner" @paste="handlePaste" ref="editor"
+                @mouseup="saveSelection" @keyup="saveSelection" @click="saveSelection"
+                style="font-size: 15px; line-height: 24px; min-height: 24px;"></div>
+        </div>
 
-        </div>
-        <!-- 图片上传 -->
-        <div class="bili-dyn-publishing__image-upload" v-show="images_show" style="">
-            <div class="bili-pics-uploader">
-                <div class="bili-pics-uploader__content">
-                    <!-- 缩略图 -->
-                    <div class="bili-pics-uploader__item success" v-for="(item, index) in images" :key="index" style="">
-                        <div class="bili-pics-uploader__item__remove" @click="removeById(item.order)"></div>
-                        <div class="bili-pics-uploader-item-preview" status="SUCCESS" msg="">
-                            <div class="bili-pics-uploader-item-preview__pic"
-                                :style="{ backgroundImage: 'url(' + item.url + ')' }">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 图片上传窗口 -->
-                    <div class="bili-pics-uploader__add" @click="picsUplod"></div>
-                </div>
-            </div>
-        </div>
-        <!-- 工具组件 -->
-        <div class="meta">
-            <div class="tools">
-                <!-- emoji -->
-                <div :class="{ 'bili-dyn-publishing__tools__item': true, 'emoji': true, 'active': isEmojiActive }"
-                    @click="emojisClick" style="position: relative;">
-                    <div role="tooltip" class="bili-popover bili-popover-shape" @click.stop v-show="isEmojiActive">
-                        <div class="bili-emoji">
-                            <div class="bili-emoji__content">
-                                <ul class="bili-emoji__list" style="overflow: auto;">
-                                    <li v-for="(emoji, index) in emojis" @click="insertImage" :key="index"
-                                        class="bili-emoji__list__item bili-emoji__list__item small">
-                                        <img src="../../public/emoji/i_f01.png" alt="11">
-                                    </li>
-                                    <li></li>
-                                </ul>
-                            </div>
+    </div>
+    <!-- 图片上传 -->
+    <div class="bili-dyn-publishing__image-upload" v-show="images_show" style="">
+        <div class="bili-pics-uploader">
+            <div class="bili-pics-uploader__content">
+                <!-- 缩略图 -->
+                <div class="bili-pics-uploader__item success" v-for="(item, index) in images" :key="index" style="">
+                    <div class="bili-pics-uploader__item__remove" @click="removeById(item.order)"></div>
+                    <div class="bili-pics-uploader-item-preview" status="SUCCESS" msg="">
+                        <div class="bili-pics-uploader-item-preview__pic"
+                            :style="{ backgroundImage: 'url(' + item.url + ')' }">
                         </div>
                     </div>
                 </div>
-                <!-- 图片上传 -->
-                <div :class="{ 'tools-item': true, 'upload': true, 'active': isUploadActive }" @click="handleClick"></div>
-            </div>
-            <div class="publishing__headquarters">
-                <button @click="cc" style="width: 70px; height: 30px; background-color: aqua; user-select: none;"></button>
+                <!-- 图片上传窗口 -->
+                <div class="bili-pics-uploader__add" @click="picsUplod"></div>
             </div>
         </div>
+    </div>
+    <!-- 工具组件 -->
+    <div class="meta">
+        <div class="tools">
+            <!-- emoji -->
+            <div :class="{ 'bili-dyn-publishing__tools__item': true, 'emoji': true, 'active': isEmojiActive }"
+                @click="emojisClick" style="position: relative;">
+                <div role="tooltip" class="bili-popover bili-popover-shape" @click.stop v-show="isEmojiActive">
+                    <div class="bili-emoji">
+                        <div class="bili-emoji__content">
+                            <ul class="bili-emoji__list" style="overflow: auto;">
+                                <li v-for="(emoji, index) in emojis" @click="insertImage" :key="index"
+                                    class="bili-emoji__list__item bili-emoji__list__item small">
+                                    <img src="../../public/emoji/i_f01.png" alt="11">
+                                </li>
+                                <li></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 图片上传 -->
+            <div :class="{ 'tools-item': true, 'upload': true, 'active': isUploadActive }" @click="handleClick"></div>
+        </div>
+        <div class="publishing__headquarters">
+            <button @click="publish" style="width: 70px; height: 30px; background-color: aqua; user-select: none;"></button>
+        </div>
+    </div>
     <!-- </el-dialog> -->
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';
+import http from '../../utils/http';
 export default defineComponent({
     name: 'short_publish',
 
@@ -86,8 +87,8 @@ interface Iamge {
 // 图片列表
 const images = ref<Iamge[]>([])
 
-function dialogShow(){
-    dialogTableVisible.value=true
+function dialogShow() {
+    dialogTableVisible.value = true
 }
 
 // 处理粘贴事件
@@ -234,10 +235,7 @@ function saveSelection() {
     // console.log(savedRange?.startOffset);
     //不能保存当前的 window.getSelection()，因为点击空白处时会被重置
 }
-function cc() {
-    console.log(savedRange?.startOffset);
 
-}
 function insertImage() {
     const selection = window.getSelection();
     if (!selection) return;
@@ -327,6 +325,31 @@ function insertImage() {
     }
 
 }
+
+// 发布
+const publish = async () => {
+    try {
+        const content = editor.value?.innerHTML
+        // editor.value!.innerHTML=content+"22"
+        const imageUrls = images.value
+            .sort((a, b) => a.order - b.order) // 按 order 升序排序
+            .map(image => image.url) // 取出每个对象的 url 属性
+            .join(",")
+
+        if(content==""&&imageUrls=="") return
+        const param = { context: content, images: imageUrls }
+        await http.post("/shorts/ShortPublish", param)
+        .then(
+            // 报错无影响
+            editor.value!.innerHTML=""
+
+        )
+        // 在这里对返回值进行处理
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 // setup中必须使用defineExpose
 defineExpose({ dialogShow })
 </script>

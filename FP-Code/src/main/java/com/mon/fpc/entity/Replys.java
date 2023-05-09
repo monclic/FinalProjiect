@@ -40,9 +40,11 @@ public class Replys {
     @TableField("to_context_type")
     private Integer toContextType;
 
-    @ApiModelProperty("当回复用户时此处为reply_id")
+    @ApiModelProperty("当回复用户时此处为reply_id，楼中互相回复时此处为楼主id，回复只记录当时@的昵称，不记录id")
     @TableField("to_context_id")
     private Integer toContextId;
 
 
+    @TableField("likes")
+    private Integer likes;
 }

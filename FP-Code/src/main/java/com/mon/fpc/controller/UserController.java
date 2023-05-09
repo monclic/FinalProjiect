@@ -7,6 +7,7 @@ import com.mon.fpc.core.BaseController;
 import com.mon.fpc.core.Resp;
 import com.mon.fpc.core.enums.RedisKeyEnum;
 import com.mon.fpc.core.exception.BaseException;
+import com.mon.fpc.dto.LoginDTO;
 import com.mon.fpc.dto.RegisterDTO;
 import com.mon.fpc.utils.JwtUtil;
 import com.mon.fpc.utils.LoginUserHolder;
@@ -21,11 +22,16 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,12 +51,14 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "账号登录")
     @PostMapping("/AccountLogin")
-    public Resp AccountLogin(String email,String pwd) {
+    public Resp AccountLogin(@RequestBody LoginDTO loginDTO) {
+        String email = loginDTO.getEmail();
+        String pwd = loginDTO.getPwd();
         if (ParamUtil.isBlank(email)) {
-            throw new BaseException("用户名不能为空");
+            throw new BaseException("email不能为空");
         }
         if (ParamUtil.isBlank(pwd)) {
-            throw new BaseException("验证码不能为空");
+            throw new BaseException("密码不能为空");
         }
 
         //检验是否是手机号或邮箱
@@ -63,13 +71,13 @@ public class UserController extends BaseController {
             if (!BCrypt.checkpw(pwd, user.getUserPwd())) {
                 throw new BaseException("密码错误");
             }
-            String token = jwtUtil.createToken(user.getUserId().toString(),user.getUserPwd());
+            String token = jwtUtil.createToken(user.getUserId().toString(), user.getUserPwd());
             LoginVO res = new LoginVO();
             res.setToken(token);
 
             this.loginOut(user.getUserId().toString());
             //设置新token
-            RedisUtil.set(RedisKeyEnum.USER_TOKEN,  user.getUserId().toString(), token,15, TimeUnit.DAYS);
+            RedisUtil.set(RedisKeyEnum.USER_TOKEN, user.getUserId().toString(), token, 15, TimeUnit.DAYS);
             RedisUtil.set(RedisKeyEnum.USER_TOKEN_INDEX, user.getUserId().toString(), token, 15, TimeUnit.DAYS);
             LoginUserHolder.set(user);
 //            System.out.println(LoginUserHolder.get(User.class).getUserId());
@@ -125,11 +133,11 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "账号注册")
     @PostMapping("/Register")
-    public Resp register(@Validated RegisterDTO registerDTO){
+    public Resp register(@RequestBody @Validated RegisterDTO registerDTO) {
         boolean exists = userService.lambdaQuery()
                 .eq(User::getUserEmail, registerDTO.getEmail())
                 .exists();
-        if (exists){
+        if (exists) {
             throw new BaseException("该邮箱已被注册");
         }
 
@@ -140,4 +148,29 @@ public class UserController extends BaseController {
         userService.save(user);
         return success();
     }
+
+    @RequestMapping("/Upload")
+    public String Upload(@RequestParam MultipartFile file) throws IOException {
+        String name = file.getOriginalFilename();
+        int index = name.indexOf(".");
+        String suffix = name.substring(index);
+        if (suffix.equalsIgnoreCase(".png")) {
+            suffix = ".png";
+        } else if (suffix.equalsIgnoreCase(".jpg")) {
+            suffix = ".jpg";
+        }
+        //防止文件名称重复造成文件覆盖
+        String timeStamp = new SimpleDateFormat("yyyMMddHHmmss").format(new Date());
+        String newName = name.substring(0, index) + "_" + timeStamp + suffix;
+
+        String destFilePath = "C:\\Users\\17272\\Desktop\\imgs\\"+ newName;
+
+        //保存图片
+        file.transferTo(new File(destFilePath));
+//        System.out.println(newName);
+//        userMapper.updateAvatar(newName,uid);
+        return newName;
+
+    }
+
 }

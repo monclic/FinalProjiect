@@ -11,6 +11,6 @@ import lombok.Data;
  */
 @Data
 public class LoginVO extends Resp {
-    @JsonProperty(value = "Token")
-    private  String Token;
+    @JsonProperty(value = "token")
+    private  String token;
 }

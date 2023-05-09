@@ -42,6 +42,7 @@ public class AuthenticationFilter implements Filter {
             whiteUrl.add("/favicon.ico");
             whiteUrl.add("/user/AccountLogin");
             whiteUrl.add("/user/Register");
+            whiteUrl.add("/user/Upload");
 
             //登录请求直接放行swagger-ui.html
             for (String s : whiteUrl) {

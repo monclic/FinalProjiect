@@ -1,27 +1,28 @@
 package com.mon.fpc.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.entity.User;
+import com.mon.fpc.Service.UserService;
 import com.mon.fpc.core.BaseController;
 import com.mon.fpc.core.Resp;
 import com.mon.fpc.dto.ShortPublishDTO;
 import com.mon.fpc.entity.Shorts;
 import com.mon.fpc.mapper.ShortsMapper;
 import com.mon.fpc.utils.LoginUserHolder;
-import com.mon.fpc.vo.CommonListVO;
+import com.mon.fpc.utils.PageUtils;
 import com.mon.fpc.vo.CommonTypeVo;
+import com.mon.fpc.vo.Item.ShortListItem;
+import com.mon.fpc.vo.ShortDetailVO;
+import com.mon.fpc.vo.ShortListVO;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.BeanUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -39,40 +40,79 @@ public class ShortsController extends BaseController {
     private com.mon.fpc.service.ShortsService shortsService;
     @Resource
     private ShortsMapper shortsMapper;
+    @Resource
+    private UserService userService;
 
     //    查list
-    @ApiOperation(value = "Shorts首页列表获取")
+    @ApiOperation(value = "Shorts首页列表获取 order:1-综合 2-最新发布 3-最多点赞 4-最多回复")
     @GetMapping("/ShortList")
-    public Resp list(String PageNumber, String PageSize) {
+    public Resp list(String PageNumber, String PageSize,String order) {
         Page<Shorts> pageInfo = new Page<>(Long.parseLong(PageNumber), Long.parseLong(PageSize));
 
-        LambdaQueryWrapper<Shorts> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.orderByDesc(Shorts::getLikes);
-        Page<Shorts> shortsPage = shortsMapper.selectPage(pageInfo, queryWrapper);
-        List<Shorts> list = shortsPage.getRecords();
-        CommonListVO<Shorts> commonListVO = new CommonListVO<>();
-        commonListVO.setList(list);
-        return success(commonListVO);
+
+        QueryWrapper<Shorts> queryWrapper = new QueryWrapper<>();
+        switch (order) {
+            case "1":
+                queryWrapper.orderByDesc("s.likes+s.replys");
+                break;
+            case "2":
+                queryWrapper.orderByDesc("s.create_time");
+                break;
+            case "3":
+                queryWrapper.orderByDesc("likes");
+                break;
+            case "4":
+                queryWrapper.orderByDesc("replys");
+                break;
+        }
+
+        List<ShortListItem> list=shortsMapper.getList(pageInfo,queryWrapper);
+        list = list.stream().peek((item) -> {
+            if (!item.getImages().equals("")) {
+                item.setImagesIs(true);
+                String[] images = item.getImages().split(" ");
+                item.setImagesList(images);
+            }
+        }).collect(Collectors.toList());
+        ShortListVO shortListVO = new ShortListVO();
+        shortListVO.setList(list);
+        shortListVO.setNextPageIs(PageUtils.isNextPage(pageInfo));
+        return success(shortListVO);
     }
 
     //    查看
-    @ApiOperation(value = "Shorts查看")
-    @GetMapping("/Shorts")
-    public Resp getShorts(String shortId) {
+    @ApiOperation(value = "ShortsDetail查看")
+    @GetMapping("/Short")
+    public Resp getShorts(@RequestParam String shortId) {
         Shorts shorts = shortsService.lambdaQuery()
                 .eq(Shorts::getId, shortId)
                 .eq(Shorts::getArticleStatus, 1)
                 .one();
+        ShortDetailVO shortDetailVO = new ShortDetailVO();
+        BeanUtils.copyProperties(shorts,shortDetailVO);
 
-        CommonTypeVo<Shorts> commonTypeVo = new CommonTypeVo<>();
-        commonTypeVo.setGoods(shorts);
-        return commonTypeVo;
+        String userNickName = userService.lambdaQuery()
+                .select(User::getUserNickName)
+                .eq(User::getUserId, shorts.getUserId())
+                .one().getUserNickName();
+
+        shortDetailVO.setUsername(userNickName);
+
+        if(!shorts.getImages().equals("")){
+            shortDetailVO.setImagesIs(true);
+
+            String[] s = shorts.getImages().split(" ");
+            shortDetailVO.setImagesList(s);
+        }
+
+        return success(shortDetailVO);
     }
 
+//    TODO 发布时加点动画
     //    发布
     @ApiOperation(value = "Shorts发布")
     @PostMapping("/ShortPublish")
-    public Resp publish(ShortPublishDTO shortPublishDTO) {
+    public Resp publish(@RequestBody ShortPublishDTO shortPublishDTO) {
         User user = LoginUserHolder.get(User.class);
 
         Shorts shorts = new Shorts();

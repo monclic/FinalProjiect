@@ -2,7 +2,11 @@ package com.mon.fpc.mapper;
 
 import com.mon.fpc.entity.Replys;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.mon.fpc.vo.Item.ReplyListItem;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +19,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ReplysMapper extends BaseMapper<Replys> {
 
+    List<ReplyListItem> getChilds(@Param("toContextId") Integer id);
 }

@@ -11,7 +11,17 @@ const routes: Array<RouteRecordRaw> = [{
     children:[
        {
         path:'shorts',
-        component: () => import('../components/Short/shorts.vue')
+        component: () => import('../components/Short/shorts.vue'),
+        children:[
+            {
+                path:'',
+            component:() => import('../components/Short/shorts-masonry-wall.vue')
+        },  {
+            path:'sdetail',
+        component:() => import('../components/Short/short-detailed.vue')
+    }
+
+        ]
        }
     ]
 },{
@@ -32,9 +42,9 @@ const routes: Array<RouteRecordRaw> = [{
 },{
     path: '/testVV',
     component: () => import('../components/testVV.vue')
-},{
-    path: '/sh1orts',
-    component: () => import('../components/Short/shorts.vue')
+},  {
+    path:'/m',
+component:() => import('../components/reply/replys.vue')
 }
 ]
 

@@ -8,7 +8,7 @@
 
         <!-- 跳转目录  -->
         <div v-for="(item,index) in items" :key="index" :class="['nav-item', {'nav-item-bcolor': isActive(index),'nav-item-hover': !isActive(index)}]">
-          <router-link :to='item'>item</router-link>
+          <router-link style="text-decoration: none;" :to='item'>{{item}}</router-link>
         </div>         
     </nav>
 </template>
@@ -24,7 +24,7 @@ export default defineComponent({
 
 <script lang="ts" setup>
 
-const items=['shorts','贰贰贰','叁叁叁','肆肆肆','伍伍伍']
+const items=['/shorts','贰贰贰','叁叁叁','肆肆肆','伍伍伍']
 
 // 定义响应式数据activeIndex
 const activeIndex = ref(0)

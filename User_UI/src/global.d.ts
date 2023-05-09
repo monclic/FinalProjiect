@@ -8,3 +8,4 @@ declare global {
         showOpenFilePicker: any;//全局变量名
     }
 }
+
