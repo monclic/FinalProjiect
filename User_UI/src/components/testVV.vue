@@ -1,57 +1,24 @@
 <template>
   <div>
-    <div v-for="(item, index) in items" :key="index" class="item">
-      <div style="height: 100px;"></div>{{ item }}</div>
-    <div ref="sentinel" class="sentinel"></div>
+    <div class="e" v-show="showDiv"></div>
+    <b @toggle-div="handleToggleDiv"></b>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import b from './test.vue';
+import { ref } from 'vue';
 
-const items = ref([1, 2, 3]);
-const sentinel = ref<HTMLDivElement | null>(null);
-const loading = ref(false);
+const showDiv = ref(false);
 
-const observer = new IntersectionObserver(([entry]) => {
-  if (entry.isIntersecting) {
-    loadMore();
-  }
-});
+const handleToggleDiv = (payload:any) => {
+  // 处理来自 b.vue 的自定义事件
+  // 在此处根据需求修改 div.e 的显示或隐藏逻辑
+  showDiv.value = !showDiv.value;
 
-onMounted(() => {
-  console.log(sentinel.value);
-  
-  if (sentinel.value) {
-    observer.observe(sentinel.value);
-  }
-});
-
-onUnmounted(() => {
-  observer.disconnect();
-});
-
-const loadMore = async () => {
-  if (loading.value) return;
-  loading.value = true;
-  await nextTick();
-  items.value.push(...[1, 2, 3]);
-  loading.value = false;
+  // 在这里可以使用 payload 参数传递的值
 };
-
 </script>
 
 <style scoped>
-.scrollable {
-  /* height: 100vh; */
-  overflow-y: auto;
-}
-.item {
-  /* height: 150px; */
-  background-color: #ddd;
-  margin-bottom: 10px;
-}
-.sentinel {
-  height: 20px;
-}
 </style>
