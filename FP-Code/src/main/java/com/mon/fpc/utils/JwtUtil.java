@@ -82,7 +82,7 @@ public class JwtUtil {
         String id = claims.getId();
 
         //验证token是否在redis中,若存在isPresent()返回true
-        Optional<Object> optional = RedisUtil.get(RedisKeyEnum.USER_TOKEN_INDEX, id);
+        Optional<Object> optional = RedisUtil.get(RedisKeyEnum.USER_TOKEN, id);
         if (optional.isPresent()) {
             if (!token.equals(optional.get().toString())) {
                 return 8;

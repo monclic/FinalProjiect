@@ -1,43 +1,23 @@
 <template>
-    <div class="replys">
-        <div v-for="(item,index) in items" :key="index" class="reply-list">
-            <div class="reply-wrapper">
-        <div class="reply-avatar">
-            <div class="reply-avatar-imgage"></div>
+    <div class="replys-container">
+        <div class="replys-container-wrapper">
+            <div class="reply-publish-wrapper">
+                <reply_publish_first :to-context-id="toContextId" :to-context-type="type"></reply_publish_first>
+            </div>
+            <div v-for="(item, index) in state.items" :key="index" class="reply-list">
+            <reply_item @toggle-div="handleToggleDiv" :item="item" :index="index"></reply_item>
+            <div v-show="item.show_reply_publish" class="reply-item-publish">
+          <reply_publish :to-context-id="item.id" :to-context-type="0"></reply_publish>
         </div>
-        <div class="reply-body">
-            <div class="reply-header">
-                <div class="reply-title">
-                    <span>{{ username }}</span>
-                </div>
-            </div>
-            <div class="reply-textarea">
-                {{ replyContext }}
-            </div>
-            <div class="reply-info">
-                <div class="time-location">{{ createtime }}</div>
-                <!-- 点赞 -->
-                <div @click="setLIke" :class="{ 'like': true, 'liked': isLike }">
-                    <i></i>
-                    {{ likes }}
-                </div>
-                <div class="write-reply">回复</div>
-            </div>
-
-            <div v-if="childReplyIs" class="child-reply">
-                <!-- 传个子表 -->
-                <replys></replys>
-            </div>
+            <div class="bottom-line"></div>
+        </div>
         </div>
     </div>
-                       
-        </div>
-    </div>
-    <div @click="getReplys" style="height: 50px;width: 200px;background-color: aquamarine;"></div>
 </template>
 
+
 <script lang='ts'>
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent, onMounted, reactive ,provide} from 'vue';
 import http from '../../utils/http';
 
 export default defineComponent({
@@ -47,169 +27,104 @@ export default defineComponent({
 </script>
 <script lang='ts' setup>
 import { ref, defineProps } from 'vue'
+import reply_publish_first from './reply_publish_first.vue'
+import reply_publish from './reply_publish.vue'
+import reply_item from './reply-item.vue'
 
+// 定义组件的 props
+const props = defineProps({
+    toContextId: {
+        type: String,
+        required: false
+    },
+    toContextType:{
+        type:Number,
+        required:false,
+    },
+    children: {
+        type: Array,
+        required: false
+    }
+});
+const id=ref(parseInt(props.toContextId))
+const type=ref(props.toContextType)
 const isLike = ref(false)
 const setLIke = () => {
     isLike.value = !isLike.value
 }
 
-const props = defineProps({
-    parent_reply_id: {
-        type: Number,
-        required: true
-    }
-})
+const state = reactive({
+    items: [] as any
+});
+
 const getReplys = async () => {
-    // const id = props.parent_reply_id;
-    // console.log(id);
-    let param={contextId:'6',contextType:'2'}
-    http.get("/replys/ReplyList",param)
-    .then((data:any)=>{
-        console.log(data);
-        
-    })
+    if (!props.children || props.children.length == 0) {
+        let param = { contextId: props.toContextId, contextType:props.toContextType }            
+        http.get("/replys/ReplyList", param)
+            .then((data: any) => {
+                state.items = data.list.map((item:any)=>{
+                    return {...item,show_reply_publish:false}
+                })                                                
+            })
+    } else {
+        state.items = props.children
+    }
 }
-const is_child_replys = ref(false)
+const index=ref(-1)
+const to_name=ref('')
+const is_to_user=ref(false)
+const handleToggleDiv = (payload:any) => {
+  // 处理来自 b.vue 的自定义事件  
+  // 在这里可以使用 payload 参数传递的值
+if(index.value!=-1){
+    state.items[index.value].show_reply_publish=false
+}
+state.items[payload.index].show_reply_publish=true
+
+index.value=payload.index
+to_name.value=payload.to_name
+is_to_user.value=payload.is_to_user
+};
+const getType=()=>{
+    if(is_to_user.value){
+        return props.toContextType
+    }else{
+        return 0
+    }
+}
+provide('aaa',to_name)
 
 onMounted(() => {
-    getReplys();
+    getReplys()
 });
 </script>
 
 <style scoped>
-.replys {
-    position: relative;
+.replys-container {
     width: 100%;
     padding: 20px;
+
 }
 
-.reply-wrapper {
+.replys-container-wrapper {
     border: 12px solid rgba(255, 255, 255, 0.5);
     border-radius: 6px;
     box-sizing: border-box;
-    min-width: 564px;
-    position: relative;
-    display: flex;
-    flex-direction: row;
 }
-
-.reply-avatar {
-    align-items: center;
-    display: flex;
-    height: 86.4px;
-    justify-content: center;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 86.4px;
-
-}
-
-.reply-avatar-imgage {
-    width: 65px;
-    height: 65px;
-    cursor: pointer;
-    background-color: blanchedalmond;
-}
-
-.reply-body {
-    display: flex;
-    flex-grow: 1;
-    flex-direction: column;
-    background-color: #fff;
-    padding: 0 10px 10px 88px;
-}
-
-.reply-header {
-    height: 62px;
-    margin-top: 12px;
-}
-
-
-.short-context-header {
-    height: 62px;
-    margin-top: 12px;
-}
-
-.reply-title {
-    align-items: center;
-    display: flex;
-    height: 22px;
-    margin: 1px 0 2px;
-    width: max-content;
-    padding-left: 20px;
-}
-
-.reply-title span {
-    color: #f69;
-    font-size: 20px;
-    line-height: 32px;
-    font-weight: 500;
-}
-
-.reply-textarea {
-    /* 当一个单词过长无法完整放入一行时，将该单词拆分为多行显示。 */
-    word-wrap: break-word;
-    box-sizing: border-box;
-    font-size: 14px;
-    letter-spacing: 1px;
-    outline: none;
-    padding: 10px 5px 0 6px;
-    position: relative;
-    vertical-align: baseline;
-    /* 保留空格和换行符，自动换行。 */
-    white-space: pre-wrap;
+.reply-publish-wrapper{
     width: 100%;
-    /* 任意位置断开单词。 */
-    word-break: break-all;
+    padding: 10px 0 20px;
+    background-color: rgba(255, 255, 255, 0.5);
 }
-
-.reply-info {
-    color: #99a2aa;
-    line-height: 14px;
-    margin-top: 6px;
-    font-size: 12px;
-    display: flex;
-    flex-direction: row;
+ .bottom-line {
+    margin-left: 80px;
+    border-bottom: 1px solid #E3E5E7;
+    background-color: #fff;
 }
-
-.time-location {
-    margin-right: 20px;
+.reply-list{
+    background-color: rgba(255, 255, 255, 0.5);
 }
-
-.like {
-    cursor: pointer;
-    margin-right: 20px;
-}
-
-.like i {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    vertical-align: text-top;
-    margin-right: 5px;
-    background: url(../../public/icons.png) no-repeat;
-    background-position: -153px -25px;
-}
-
-.like:hover i {
-    background-position: -218px -25px;
-}
-
-.like.liked i {
-    background-position: -154px -89px;
-}
-
-.write-reply {
-    padding: 0 5px;
-    border-radius: 4px;
-    margin-right: 15px;
-    cursor: pointer;
-    display: inline-block;
-    transform: color 0.3s;
-}
-
-.write-reply:hover {
-    color: #94d6ef;
+.reply-item-publish{
+    margin: 10px 0;
 }
 </style>

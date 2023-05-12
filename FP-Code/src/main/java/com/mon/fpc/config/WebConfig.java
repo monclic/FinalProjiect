@@ -33,6 +33,6 @@ public class WebConfig  extends WebMvcConfigurationSupport {
 //                //.addResourceLocations("classpath:/upload/");
 //                .addResourceLocations("file:/" + ImgUtils.imgUrl + "/upload/");
         registry.addResourceHandler("/imgs/**")
-                .addResourceLocations("file:"+ "C:/Users/17272/Desktop/imgs");
+                .addResourceLocations("file:"+ "C:/Users/17272/Desktop/imgs/");
     }
 }

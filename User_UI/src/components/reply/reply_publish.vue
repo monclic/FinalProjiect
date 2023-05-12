@@ -1,75 +1,48 @@
 <template>
-    <!-- <el-dialog class="dialog" v-model="dialogTableVisible" style="  z-index: 999;" title=""> -->
-    <!-- <div  v-show="dialogTableVisible"></div> -->
-    <!-- 编辑区 -->
-    <div class="bili-dyn-publishing__input">
-        <div class="bili-rich-textarea" style="max-height: 180px;">
-
-            <div contenteditable="true" class="bili-rich-textarea__inner" @paste="handlePaste" ref="editor"
-                @mouseup="saveSelection" @keyup="saveSelection" @click="saveSelection"
-                style="font-size: 15px; line-height: 24px; min-height: 24px;"></div>
-        </div>
-
-    </div>
-    <!-- 图片上传 -->
-    <div class="bili-dyn-publishing__image-upload" v-show="images_show" style="">
-        <div class="bili-pics-uploader">
-            <div class="bili-pics-uploader__content">
-                <!-- 缩略图 -->
-                <div class="bili-pics-uploader__item success" v-for="(item, index) in images" :key="index" style="">
-                    <div class="bili-pics-uploader__item__remove" @click="removeById(item.order)"></div>
-                    <div class="bili-pics-uploader-item-preview" status="SUCCESS" msg="">
-                        <div class="bili-pics-uploader-item-preview__pic"
-                            :style="{ backgroundImage: 'url(' + item.url + ')' }">
-                        </div>
-                    </div>
+    <div class="reply-publish">
+        <div class="bili-dyn-publishing__input">
+            <div class="bili-rich-textarea" style="max-height: 180px;">
+                {{ a }}
+                <div contenteditable="true" class="bili-rich-textarea__inner" @paste="handlePaste" ref="editor"
+                    @mouseup="saveSelection" @keyup="saveSelection" @click="saveSelection"
+                    style="font-size: 15px; line-height: 24px; min-height: 24px;">
+                
                 </div>
-                <!-- 图片上传窗口 -->
-                <div class="bili-pics-uploader__add" @click="picsUplod"></div>
+            </div>
+
+        </div>
+        <!-- 工具组件 -->
+        <div class="meta">
+            <div class="publishing__headquarters">
+                <button @click="publish" class="publish-button">发布</button>
             </div>
         </div>
     </div>
-    <!-- 工具组件 -->
-    <div class="meta">
-        <div class="tools">
-            <!-- emoji -->
-            <div :class="{ 'bili-dyn-publishing__tools__item': true, 'emoji': true, 'active': isEmojiActive }"
-                @click="emojisClick" style="position: relative;">
-                <div role="tooltip" class="bili-popover bili-popover-shape" @click.stop v-show="isEmojiActive">
-                    <div class="bili-emoji">
-                        <div class="bili-emoji__content">
-                            <ul class="bili-emoji__list" style="overflow: auto;">
-                                <li v-for="(emoji, index) in emojis" @click="insertImage" :key="index"
-                                    class="bili-emoji__list__item bili-emoji__list__item small">
-                                    <img src="../../public/emoji/i_f01.png" alt="11">
-                                </li>
-                                <li></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- 图片上传 -->
-            <div :class="{ 'tools-item': true, 'upload': true, 'active': isUploadActive }" @click="handleClick"></div>
-        </div>
-        <div class="publishing__headquarters">
-            <button @click="publish" style="width: 70px; height: 30px; background-color: #00aeec; color:#fff
-            ;user-select: none;">发布</button>
-        </div>
-    </div>
-    <!-- </el-dialog> -->
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent,inject } from 'vue';
 import http from '../../utils/http';
 export default defineComponent({
-    name: 'short_publish',
-
+    name: 'reply_publish',
 });
 </script>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref ,defineProps,onMounted} from 'vue'
 import { ElMessageBox } from 'element-plus'
+
+const a1:String=inject('aaa')
+const a=ref<String>(a1)
+
+const props = defineProps({
+    toContextId: {
+        type: Number,
+        required: true
+    },
+    toContextType:{
+        type:Number,
+        required:true
+    }
+});
 
 // 使用ref可以让组件做到实时响应
 const dialogTableVisible = ref(false)
@@ -330,58 +303,50 @@ function insertImage() {
 // 发布
 const publish = async () => {
     try {
-        const content = editor.value?.innerHTML
+        let content = editor.value?.innerHTML
+        if(content){
+            content=a.value+content
+        }
+        
         // editor.value!.innerHTML=content+"22"
         const imageUrls = images.value
             .sort((a, b) => a.order - b.order) // 按 order 升序排序
             .map(image => image.url) // 取出每个对象的 url 属性
             .join(",")
 
-        if(content==""&&imageUrls=="") return
-        const param = { context: content, images: imageUrls }
-        await http.post("/shorts/ShortPublish", param)
-        .then(
-            // 报错无影响
-            editor.value!.innerHTML=""
+        if (content == "" && imageUrls == "") return
+        const param = { replyContext: content, toContextId: props.toContextId, toContextType: props.toContextType }
+        console.log(param);
+        
+        await http.post("/replys/Reply", param)
+            .then(
+                // 报错无影响
+                editor.value!.innerHTML = ""
 
-        )
+            )
         // 在这里对返回值进行处理
     } catch (error) {
         console.error(error);
     }
+    window.location.reload()  
 }
+
+
+
+
 
 // setup中必须使用defineExpose
 defineExpose({ dialogShow })
+onMounted(()=>{
+})
 </script>
   
   
-<style>
-/* 去除dialog自带的header 不能在scope内 */
-.el-dialog__header {
-    padding: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-.el-dialog__headerbtn {
-    height: 0;
-    width: 0;
-}
-
-.el-dialog__headerbtn>.el-icon {
-    display: none !important;
-}
-
-.el-dialog__body {
-    padding: 10px !important;
-    border: 11px solid rgba(8, 164, 221, 0.3);
-}
-</style>
-  
 <style scoped>
-.dialog {
+.reply-publish {
+    background-color: #fff;
     border-radius: 10px;
-    border: 12px solid slategray;
+    padding: 20px;
 }
 
 .bili-dyn-publishing__input {
@@ -418,7 +383,7 @@ defineExpose({ dialogShow })
 }
 
 .bili-rich-textarea__inner:empty::before {
-    content: '有什么想和大家分享的？';
+    content: '回复评论';
     color: grey;
 
 }
@@ -540,7 +505,8 @@ defineExpose({ dialogShow })
     align-items: center;
     display: flex;
     justify-content: center;
-    margin-left: 20px;
+    margin-left: 500px;
+    width: 100%;
 }
 
 .tools-item {
@@ -661,6 +627,20 @@ li {
     margin: 4px;
     display: list-item;
     text-align: -webkit-match-parent;
+}
+
+.publish-button {
+    width: 80px;
+    height: 32px;
+    user-select: none;
+    border-radius: 6px;
+    background-color: #00aeec;
+    color: #fff;
+    padding: 10px;
+    display: flex;
+  align-items: center; /* 垂直居中对齐 */
+  justify-content: center; /* 水平居中对齐 */
+  text-align: justify;
 }
 </style>
   

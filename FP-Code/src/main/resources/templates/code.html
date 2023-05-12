@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>验证码页面</title>
+<body>
+<div class="container">
+  <h1>验证码</h1>
+  <div class="code">${code}</div>
+  <div class="note">您正在进行身份验证，请勿将验证码透露给他人，如非本人操作请忽略</div>
+</div>
+</body>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      max-width: 400px;
+      padding: 20px;
+      background-color: #ffffff;
+      border: 1px solid #dddddd;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333333;
+    }
+
+    .code {
+      font-size: 48px;
+      font-weight: bold;
+      color: #4caf50;
+      margin-bottom: 10px;
+    }
+
+    .note {
+      color: #888888;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+</html>

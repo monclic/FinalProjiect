@@ -16,4 +16,7 @@ public class ShortListItem extends Shorts {
     private boolean imagesIs=false;
 
     private String[] imagesList;
+
+
+    private boolean likeIs=false;
 }

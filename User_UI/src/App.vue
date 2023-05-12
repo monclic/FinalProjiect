@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <!-- <header id="header">
+    <header id="header">
       <div><a href="#">Link 1</a></div>
       <div @click="login" style="cursor: pointer;">Login</div>
-    </header> -->
+    </header>
     <router-view></router-view>
   </div>
 </template>

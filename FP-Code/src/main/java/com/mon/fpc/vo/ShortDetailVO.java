@@ -19,6 +19,8 @@ public class ShortDetailVO extends Resp {
 
     private String username;
 
+    private String avatar;
+
     private String[] imagesList;
 
     private boolean imagesIs=false;
@@ -30,4 +32,6 @@ public class ShortDetailVO extends Resp {
     private Integer likes;
 
     private Integer replys;
+
+    private boolean likeIs;
 }

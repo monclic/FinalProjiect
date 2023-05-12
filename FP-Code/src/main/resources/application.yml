@@ -9,15 +9,31 @@ spring:
     url: jdbc:mysql://localhost:3306/FPC?serverTimezone=UTC
     username: root
     password: 123456
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+  mail: #https://www.cnblogs.com/ruiyeclub/p/13394493.html
+    host: smtp.163.com #这里换成自己的邮箱类型 例如qq邮箱就写smtp.qq.com
+    username: chenclic@163.com #邮箱
+    password: JNNSDUTLFCJHUSCX #邮箱密码或者授权码
+    protocol: smtp #发送邮件协议
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    properties.mail.smtp.socketFactoryClass: javax.net.ssl.SSLSocketFactory
+
+    default-encoding: utf-8
+  freemarker:
+    cache: true # 缓存配置 开发阶段应该配置为false 因为经常会改
+    suffix: .html # 模版后缀名 默认为ftl
+    charset: UTF-8 # 文件编码
+    template-loader-path: classpath:/templates/  # 存放模板的文件夹，以resource文件夹为相对路径
 
 mybatis-plus:
   #配置Mapper映射文件
   mapper-locations: classpath*:mapper/*Mapper.xml
   #控制台sql语句打印
   configuration:
-      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    database: 0

@@ -10,6 +10,7 @@ import com.mon.fpc.dto.ShortPublishDTO;
 import com.mon.fpc.entity.Replys;
 import com.mon.fpc.entity.Shorts;
 import com.mon.fpc.mapper.ReplysMapper;
+import com.mon.fpc.utils.ImgUtil;
 import com.mon.fpc.utils.LoginUserHolder;
 import com.mon.fpc.vo.CommonListVO;
 import com.mon.fpc.vo.Item.ReplyListItem;
@@ -49,7 +50,7 @@ public class ReplysController extends BaseController {
     public Resp reply(@RequestBody @Validated ReplyDTO replyDTO) {
         boolean exists = false;
         if (replyDTO.getToContextType() == 0) {
-            exists = userService.lambdaQuery().eq(User::getUserId, replyDTO.getToContextId()).exists();
+            exists = userService.lambdaQuery().eq(User::getUserId, getContextId(replyDTO.getToContextType(),replyDTO.getToContextId())).exists();
         } else if (replyDTO.getToContextType() == 2) {
             exists = shortsService.lambdaQuery().eq(Shorts::getId, replyDTO.getToContextId()).exists();
         }
@@ -75,10 +76,10 @@ public class ReplysController extends BaseController {
     Integer getContextId(Integer type, Integer contextId) {
         if (type == 0) {
             Replys replys = replysService.lambdaQuery()
-                    .select(Replys::getId, Replys::getToContextType)
+                    .select(Replys::getUserId, Replys::getToContextType)
                     .eq(Replys::getId, contextId)
                     .one();
-            if (replys.getToContextType() != 0) return replys.getId();
+            if (replys.getToContextType() != 0) return replys.getUserId();
             getContextId(replys.getToContextType(), replys.getId());
         }
         return contextId;
@@ -102,7 +103,7 @@ public class ReplysController extends BaseController {
                     .eq(User::getUserId, item.getUserId())
                     .one();
             replyListItem.setUsername(user.getUserNickName());
-            replyListItem.setAvatar(user.getUserAvatar());
+            replyListItem.setAvatar(new ImgUtil().initImgs(user.getUserAvatar())[0]);
 
 //            判断子回复是否存在
             boolean exists = replysService.lambdaQuery()
@@ -111,6 +112,9 @@ public class ReplysController extends BaseController {
             if (exists) {
                 replyListItem.setChildReplyIs(true);
                 List<ReplyListItem> childs = replysMapper.getChilds(item.getId());
+                for (ReplyListItem i:childs)
+                    i.setAvatar(new ImgUtil().initImgs(i.getAvatar())[0]);
+
                 replyListItem.setChildList(childs);
             }
             return replyListItem;

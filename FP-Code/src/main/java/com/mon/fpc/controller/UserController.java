@@ -1,5 +1,7 @@
 package com.mon.fpc.controller;
 
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import com.entity.User;
 import com.mon.fpc.Service.UserService;
@@ -9,10 +11,7 @@ import com.mon.fpc.core.enums.RedisKeyEnum;
 import com.mon.fpc.core.exception.BaseException;
 import com.mon.fpc.dto.LoginDTO;
 import com.mon.fpc.dto.RegisterDTO;
-import com.mon.fpc.utils.JwtUtil;
-import com.mon.fpc.utils.LoginUserHolder;
-import com.mon.fpc.utils.ParamUtil;
-import com.mon.fpc.utils.VerifyUtils;
+import com.mon.fpc.utils.*;
 import com.mon.fpc.utils.redis.RedisUtil;
 import com.mon.fpc.vo.LoginVO;
 import io.jsonwebtoken.Claims;
@@ -32,6 +31,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -48,6 +48,8 @@ public class UserController extends BaseController {
     private UserService userService;
     @Resource
     JwtUtil jwtUtil;
+    @Resource
+    MailUtils mailUtils;
 
     @ApiOperation(value = "账号登录")
     @PostMapping("/AccountLogin")
@@ -78,7 +80,6 @@ public class UserController extends BaseController {
             this.loginOut(user.getUserId().toString());
             //设置新token
             RedisUtil.set(RedisKeyEnum.USER_TOKEN, user.getUserId().toString(), token, 15, TimeUnit.DAYS);
-            RedisUtil.set(RedisKeyEnum.USER_TOKEN_INDEX, user.getUserId().toString(), token, 15, TimeUnit.DAYS);
             LoginUserHolder.set(user);
 //            System.out.println(LoginUserHolder.get(User.class).getUserId());
 
@@ -106,13 +107,12 @@ public class UserController extends BaseController {
         String redisToken = "";
         if (!ParamUtil.isBlank(userId)) {
             //删除旧token
-            redisToken = RedisUtil.get(RedisKeyEnum.USER_TOKEN_INDEX, userId)
+            redisToken = RedisUtil.get(RedisKeyEnum.USER_TOKEN, userId)
                     .orElse("").toString();
             log.info("【客户端登出】用户id为：{}，旧token为：{}", userId, redisToken);
         }
 
         if (!ParamUtil.isBlank(redisToken)) {
-            RedisUtil.delete(RedisKeyEnum.USER_TOKEN_INDEX, userId);
             RedisUtil.delete(RedisKeyEnum.USER_TOKEN, redisToken);
         }
 
@@ -122,11 +122,10 @@ public class UserController extends BaseController {
 
     public void loginOut(String userId) {
         //删除旧token
-        String redisToken = RedisUtil.get(RedisKeyEnum.USER_TOKEN_INDEX, userId)
+        String redisToken = RedisUtil.get(RedisKeyEnum.USER_TOKEN, userId)
                 .orElse("").toString();
         log.info("【客户端登出】用户id为：{}，旧token为：{}", userId, redisToken);
         if (!ParamUtil.isBlank(redisToken)) {
-            RedisUtil.delete(RedisKeyEnum.USER_TOKEN_INDEX, userId);
             RedisUtil.delete(RedisKeyEnum.USER_TOKEN, redisToken);
         }
     }
@@ -141,14 +140,51 @@ public class UserController extends BaseController {
             throw new BaseException("该邮箱已被注册");
         }
 
+        Optional<Object> o = RedisUtil.get(RedisKeyEnum.USER_REGISTER_CODE, registerDTO.getEmail());
+        if (!o.isPresent()){
+            return error("请获取验证码");
+        }
+        String code = (String) o.get();
+        if (!code.equals(registerDTO.getCode()))return error("请确认验证码");
+        RedisUtil.delete(RedisKeyEnum.USER_REGISTER_CODE,registerDTO.getEmail());
+
         User user = new User();
         user.setUserEmail(registerDTO.getEmail());
-        //TODO 加盐
+        //TODO  加盐
         user.setUserPwd(BCrypt.hashpw(registerDTO.getPwd()));
         userService.save(user);
+        Integer userId = userService.lambdaQuery()
+                .select(User::getUserId)
+                .eq(User::getUserEmail, registerDTO.getEmail())
+                .one().getUserId();
+        String name="用户"+userId.toString();
+        userService.lambdaUpdate()
+                .set(User::getUserNickName,name)
+                .eq(User::getUserId,userId)
+                .update();
         return success();
     }
+    @ApiOperation(value = "发送验证码")
+    @PostMapping("/sendCode")
+    public Resp sendCode(String email){
+        boolean checkEmail = VerifyUtil.checkEmail(email);
+        if (!checkEmail) return error("请输入正确的email地址");
+        boolean exists = userService.lambdaQuery()
+                .eq(User::getUserEmail, email)
+                .exists();
+//        TODO
+//        if (exists) {
+//            throw new BaseException("该邮箱已被注册");
+//        }
 
+        //设置验证码
+        String random = RandomUtil.randomNumbers(6);
+        RedisUtil.set(RedisKeyEnum.USER_REGISTER_CODE, email, random, 5, TimeUnit.MINUTES);
+        ThreadUtil.execAsync(() -> {
+            mailUtils.sendCodeMail(email, random);
+        });
+        return success();
+    }
     @RequestMapping("/Upload")
     public String Upload(@RequestParam MultipartFile file) throws IOException {
         String name = file.getOriginalFilename();

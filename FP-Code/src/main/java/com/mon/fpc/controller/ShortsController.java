@@ -8,8 +8,10 @@ import com.mon.fpc.Service.UserService;
 import com.mon.fpc.core.BaseController;
 import com.mon.fpc.core.Resp;
 import com.mon.fpc.dto.ShortPublishDTO;
+import com.mon.fpc.entity.Likes;
 import com.mon.fpc.entity.Shorts;
 import com.mon.fpc.mapper.ShortsMapper;
+import com.mon.fpc.utils.ImgUtil;
 import com.mon.fpc.utils.LoginUserHolder;
 import com.mon.fpc.utils.PageUtils;
 import com.mon.fpc.vo.CommonTypeVo;
@@ -42,6 +44,8 @@ public class ShortsController extends BaseController {
     private ShortsMapper shortsMapper;
     @Resource
     private UserService userService;
+    @Resource
+    private com.mon.fpc.service.LikesService likesService;
 
     //    查list
     @ApiOperation(value = "Shorts首页列表获取 order:1-综合 2-最新发布 3-最多点赞 4-最多回复")
@@ -70,8 +74,14 @@ public class ShortsController extends BaseController {
         list = list.stream().peek((item) -> {
             if (!item.getImages().equals("")) {
                 item.setImagesIs(true);
-                String[] images = item.getImages().split(" ");
+                String[] images = new ImgUtil().initImgs(item.getImages());
                 item.setImagesList(images);
+                boolean exists = likesService.lambdaQuery()
+                        .eq(Likes::getUserId, LoginUserHolder.get(User.class).getUserId())
+                        .eq(Likes::getContextId, item.getId())
+                        .eq(Likes::getContextType, 2)
+                        .exists();
+                item.setLikeIs(exists);
             }
         }).collect(Collectors.toList());
         ShortListVO shortListVO = new ShortListVO();
@@ -91,18 +101,27 @@ public class ShortsController extends BaseController {
         ShortDetailVO shortDetailVO = new ShortDetailVO();
         BeanUtils.copyProperties(shorts,shortDetailVO);
 
-        String userNickName = userService.lambdaQuery()
-                .select(User::getUserNickName)
+        User user = userService.lambdaQuery()
+                .select(User::getUserNickName, User::getUserAvatar)
                 .eq(User::getUserId, shorts.getUserId())
-                .one().getUserNickName();
+                .one();
 
-        shortDetailVO.setUsername(userNickName);
+        shortDetailVO.setUsername(user.getUserNickName());
+        shortDetailVO.setAvatar(new ImgUtil().initImgs(user.getUserAvatar())[0]);
 
         if(!shorts.getImages().equals("")){
             shortDetailVO.setImagesIs(true);
 
-            String[] s = shorts.getImages().split(" ");
+            String[] s = new ImgUtil().initImgs(shorts.getImages());
+
             shortDetailVO.setImagesList(s);
+
+            boolean exists = likesService.lambdaQuery()
+                    .eq(Likes::getUserId, LoginUserHolder.get(User.class).getUserId())
+                    .eq(Likes::getContextId, shorts.getId())
+                    .eq(Likes::getContextType, 2)
+                    .exists();
+            shortDetailVO.setLikeIs(exists);
         }
 
         return success(shortDetailVO);

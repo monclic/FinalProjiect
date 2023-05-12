@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [{
                 path:'',
             component:() => import('../components/Short/shorts-masonry-wall.vue')
         },  {
-            path:'sdetail',
+            path:'sdetail/:sdid',
         component:() => import('../components/Short/short-detailed.vue')
     }
 
@@ -44,7 +44,7 @@ const routes: Array<RouteRecordRaw> = [{
     component: () => import('../components/testVV.vue')
 },  {
     path:'/m',
-component:() => import('../components/reply/replys.vue')
+component:() => import('../components/reply/reply_publish.vue')
 }
 ]
 

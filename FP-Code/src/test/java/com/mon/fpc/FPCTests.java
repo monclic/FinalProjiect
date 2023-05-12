@@ -1,11 +1,11 @@
 package com.mon.fpc;
 
 import cn.hutool.crypto.digest.BCrypt;
-import com.mon.fpc.dto.RegisterDTO;
+import com.entity.User;
+import com.mon.fpc.Service.UserService;
 import com.mon.fpc.utils.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 
@@ -31,14 +31,20 @@ public class FPCTests {
 
     @Resource
     JwtUtil jwtUtill;
+    @Resource
+    UserService userService;
+
     @Test
-    void c(){
-        RegisterDTO registerDTO = new RegisterDTO();
-        registerDTO.setEmail("1@1.com");
-        registerDTO.setPwd("1");
-       b(registerDTO);
+    void b(){
+        com.entity.User user = new com.entity.User();
+        user.setUserEmail("111111");
+        //TODO  加盐
+        user.setUserPwd(BCrypt.hashpw("111111"));
+//        return user;
+//        userService.save(user);
+        c(user);
     }
-    void b(@Validated RegisterDTO registerDTO){
-        System.out.println(registerDTO.getPwd());
+    void c(User user){
+        System.out.println(user.getUserId());
     }
 }

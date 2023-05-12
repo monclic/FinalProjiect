@@ -36,7 +36,7 @@ public class LikesController extends BaseController {
     @Resource
     private com.mon.fpc.service.LikesService likesService;
 
-    @ApiOperation(value = "点赞Shorts 1-Longs 2-Shorts")
+    @ApiOperation(value = "点赞Shorts 1-Longs 2-Shorts 再次点赞为取消")
     @PostMapping("/setLike")
     public Resp setLike(@RequestBody LikesDTO likesDTO) {
         Integer type = likesDTO.getType();
@@ -49,10 +49,22 @@ public class LikesController extends BaseController {
         boolean likeExists = likesService.lambdaQuery()
                 .eq(Likes::getUserId, userId)
                 .eq(Likes::getContextId, contextId)
+                .eq(Likes::getContextType,likesDTO.getType())
                 .exists();
 
-//        若已点赞则直接返回
-        if (likeExists) return success();
+//        若已点赞则直接取消
+        if (likeExists){
+            Integer id = likesService.lambdaQuery()
+                    .select(Likes::getId)
+                    .eq(Likes::getUserId, LoginUserHolder.get(User.class).getUserId())
+                    .eq(Likes::getContextId, contextId)
+                    .eq(Likes::getContextType, type)
+                    .one().getId();
+            likesService.removeById(id);
+
+            operationLikes("likes=likes-1",type,contextId);
+            return success();
+        }
 
         Likes likes = new Likes();
         likes.setUserId(userId);

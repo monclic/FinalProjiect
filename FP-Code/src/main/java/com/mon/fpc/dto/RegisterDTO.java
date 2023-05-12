@@ -25,4 +25,6 @@ public class RegisterDTO {
     @NotBlank(message = "请输入密码")
     @Length(message = "密码为{min} 到 {max} 位",min=1 ,max = 18)
     private String pwd;
+
+    private String code;
 }
