@@ -1,29 +1,68 @@
 <template>
   <div id="app">
     <header id="header">
-      <div><a href="#">Link 1</a></div>
-      <div @click="login" style="cursor: pointer;">Login</div>
+      <div @click="getName">FIRST</div>
+      <div class="header-item" @click="to">
+        {{ name_space }}
+        <!-- <div class="name_utils">
+          <div class="item">
+            <div class="to_info" @click="to_info" style="padding-bottom: 5px;">个人信息</div>
+            <div class="form__separator-line"></div>
+            <div class="loginout" @click="loginout" style="padding-top: 5px;">登出</div>
+          </div>
+        </div> -->
+      </div>
+      <!-- <router-link class="header-item" to="/login">{{ name_space }}</router-link> -->
     </header>
     <router-view></router-view>
   </div>
 </template>
 
 <script lang='ts' setup>
+import { ref } from 'vue'
 import http from './utils/http'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-const login=()=>{
-  const formData= new FormData()
-  formData.append('email','111@1.com')
-  formData.append('pwd','111111')
-  let params={email:'111@1.com',pwd:'111111'}
+const router=useRouter()
+const name_space=ref('')
 
-http.post('/user/AccountLogin',params)
-.then(data=>{
-  localStorage.setItem('token',data.token)
+const to=()=>{
+  const token=localStorage.getItem('token')
+  if(token)return
+  router.push('/login')
+}
+
+const getName=()=>{
+  
+  http.get('/user/getName')
+  .then((data:any)=>{
+    name_space.value=data.goods
+    
+  })
+  .catch(error=>{
+    name_space.value='登录/注册'
+  }
+  )
+}
+
+
+const to_info=()=>{
+  router.push('/info')
+}
+
+const loginout=()=>{
+http.post('/user/LoginOut')
+.then((data)=>{
+  localStorage.removeItem('token')
+}
+)
+}
+
+onMounted(()=>{
+  getName()
 })
 
-  
-}
 </script>
 
 <style>
@@ -33,6 +72,7 @@ html {
   font-size: 16px;
   box-sizing: border-box;
   cursor: default;
+  background-color: #e7e7e7;
 }
 
 *,
@@ -86,4 +126,36 @@ html {
   /* 模糊化  ！！使用此效果不能使用opacity，只能设置background-color为半透明色 */
     backdrop-filter: blur(5px);
 }
+.header-item{
+  text-decoration: none;
+  cursor: pointer;
+  color: #61625b;
+}
+/* .header-item:hover .name_utils{
+  display: block;
+} */
+.name_utils{
+  background-color: #fff;
+    border: 1px solid #e3e5e7;
+    color: #222;
+    font-family: PingFang SC, HarmonyOS_Regular, Helvetica Neue, Microsoft YaHei, sans-serif !important;
+    margin-bottom: 10px;
+    margin-top: 7px;
+    pointer-events: all;
+    position: absolute;    
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    border-radius: 7px;
+}
+.item{
+  text-align: center;
+  padding: 10px;
+}
+.form__separator-line {
+    display: block;
+    /* width: 100%; */
+    height: 0;
+    border-bottom: 1px solid #e3e5e7;
+  }
 </style>

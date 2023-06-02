@@ -16,4 +16,18 @@
           and s.user_id = u.user_id
             ${ew.customSqlSegment}
     </select>
+    <select id="getPersonalShorts" resultType="com.mon.fpc.vo.Item.ShortListItem">
+        select s.id,
+               s.short_content,
+               s.create_time,
+               s.images,
+               s.likes,
+               s.replys,
+               u.user_nickname as username
+        from shorts s,
+             user u
+        where s.article_status = 1
+          and s.user_id = u.user_id
+        and s.user_id=#{uid}
+    </select>
 </mapper>

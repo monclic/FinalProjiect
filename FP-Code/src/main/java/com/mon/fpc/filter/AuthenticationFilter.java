@@ -45,6 +45,13 @@ public class AuthenticationFilter implements Filter {
             whiteUrl.add("/user/Upload");
             whiteUrl.add("/imgs/**");
             whiteUrl.add("/user/sendCode");
+            whiteUrl.add("/user/ReSetPwd");
+            whiteUrl.add("/user/sendCode_2");
+            whiteUrl.add("/admin/**");
+            whiteUrl.add("/longs/**");
+            whiteUrl.add("/shorts/**");
+            whiteUrl.add("/board/**");
+
 
 
             //登录请求直接放行swagger-ui.html

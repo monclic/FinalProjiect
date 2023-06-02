@@ -42,7 +42,8 @@ public class FPCTests {
         user.setUserPwd(BCrypt.hashpw("111111"));
 //        return user;
 //        userService.save(user);
-        c(user);
+//        c(user);
+        System.out.println(BCrypt.hashpw("111111"));
     }
     void c(User user){
         System.out.println(user.getUserId());

@@ -37,3 +37,4 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+img_url: C:/Users/17272/Desktop/imgs/

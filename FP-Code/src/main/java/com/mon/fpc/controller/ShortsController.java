@@ -76,12 +76,13 @@ public class ShortsController extends BaseController {
                 item.setImagesIs(true);
                 String[] images = new ImgUtil().initImgs(item.getImages());
                 item.setImagesList(images);
+                if (LoginUserHolder.get(User.class,0)!=null){
                 boolean exists = likesService.lambdaQuery()
                         .eq(Likes::getUserId, LoginUserHolder.get(User.class).getUserId())
                         .eq(Likes::getContextId, item.getId())
                         .eq(Likes::getContextType, 2)
                         .exists();
-                item.setLikeIs(exists);
+                item.setLikeIs(exists);}
             }
         }).collect(Collectors.toList());
         ShortListVO shortListVO = new ShortListVO();
@@ -115,14 +116,13 @@ public class ShortsController extends BaseController {
             String[] s = new ImgUtil().initImgs(shorts.getImages());
 
             shortDetailVO.setImagesList(s);
-
-            boolean exists = likesService.lambdaQuery()
-                    .eq(Likes::getUserId, LoginUserHolder.get(User.class).getUserId())
-                    .eq(Likes::getContextId, shorts.getId())
-                    .eq(Likes::getContextType, 2)
-                    .exists();
-            shortDetailVO.setLikeIs(exists);
         }
+        boolean exists = likesService.lambdaQuery()
+                .eq(Likes::getUserId, LoginUserHolder.get(User.class).getUserId())
+                .eq(Likes::getContextId, shorts.getId())
+                .eq(Likes::getContextType, 2)
+                .exists();
+        shortDetailVO.setLikeIs(exists);
 
         return success(shortDetailVO);
     }
@@ -141,6 +141,61 @@ public class ShortsController extends BaseController {
         shorts.setArticleStatus(1);
 
         shortsService.save(shorts);
+        return success();
+    }
+
+    @ApiOperation(value = "获取个人的short列表")
+    @GetMapping("/PersonalShorts")
+    public Resp getPersonalShorts(String PageNumber, String PageSize){
+        Integer uid = LoginUserHolder.get(User.class).getUserId();
+
+        Page<Shorts> pageInfo = new Page<>(Long.parseLong(PageNumber), Long.parseLong(PageSize));
+
+
+        List<ShortListItem> list=shortsMapper.getPersonalShorts(pageInfo,uid);
+        list = list.stream().peek((item) -> {
+            if (!item.getImages().equals("")) {
+                item.setImagesIs(true);
+                String[] images = new ImgUtil().initImgs(item.getImages());
+                item.setImagesList(images);
+                boolean exists = likesService.lambdaQuery()
+                        .eq(Likes::getUserId, LoginUserHolder.get(User.class).getUserId())
+                        .eq(Likes::getContextId, item.getId())
+                        .eq(Likes::getContextType, 2)
+                        .exists();
+                item.setLikeIs(exists);
+            }
+        }).collect(Collectors.toList());
+        ShortListVO shortListVO = new ShortListVO();
+        shortListVO.setList(list);
+        shortListVO.setNextPageIs(PageUtils.isNextPage(pageInfo));
+        return success(shortListVO);
+    }
+
+    @ApiOperation(value = "Shorts删除")
+    @PostMapping("/delete")
+    public Resp delete(@RequestBody String sid) {
+        Integer userId = LoginUserHolder.get(User.class).getUserId();
+        boolean exists = shortsService.lambdaQuery()
+                .eq(Shorts::getUserId, userId)
+                .eq(Shorts::getId, sid)
+                .exists();
+        if (!exists) return error("删除失败");
+
+        shortsService.removeById(sid);
+        return success();
+    }
+
+
+    @ApiOperation(value = "Shorts删除")
+    @PostMapping("/deletea")
+    public Resp deletea(@RequestBody String sid) {
+        boolean exists = shortsService.lambdaQuery()
+                .eq(Shorts::getId, sid)
+                .exists();
+        if (!exists) return error("删除失败");
+
+        shortsService.removeById(sid);
         return success();
     }
 

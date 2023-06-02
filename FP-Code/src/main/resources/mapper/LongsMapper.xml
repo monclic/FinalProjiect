@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mon.fpc.mapper.LongsMapper">
+
+    <select id="getList" resultType="com.mon.fpc.vo.Item.LongListItem">
+        select s.id,
+               s.text,
+               s.create_time,
+               s.tags as tags,
+               s.likes,
+               s.replys,
+               u.user_nickname as username
+        from longs s,
+             user u
+        where s.article_status = 1
+          and s.user_id = u.user_id
+            ${ew.customSqlSegment}
+    </select>
+    <select id="PersonalLongs" resultType="com.mon.fpc.vo.Item.LongListItem">
+        select s.id,
+               s.text,
+               s.create_time,
+               s.tags,
+               s.likes,
+               s.replys,
+               u.user_nickname as username
+        from longs s,
+             user u
+        where s.article_status = 1
+          and s.user_id = u.user_id
+          and s.user_id=#{uid}
+    </select>
+    <select id="PersonalLongsGraft" resultType="com.mon.fpc.vo.Item.LongListItem">
+        select s.id,
+               s.text,
+               s.create_time,
+               s.tags,
+               s.likes,
+               s.replys,
+               u.user_nickname as username
+        from longs s,
+             user u
+        where s.article_status = 0
+          and s.user_id = u.user_id
+          and s.user_id=#{uid}
+    </select>
+</mapper>

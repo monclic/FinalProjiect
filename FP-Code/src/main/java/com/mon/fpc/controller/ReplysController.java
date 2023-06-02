@@ -2,11 +2,13 @@ package com.mon.fpc.controller;
 
 
 import com.entity.User;
+import com.mon.fpc.Service.LongsService;
 import com.mon.fpc.Service.UserService;
 import com.mon.fpc.core.BaseController;
 import com.mon.fpc.core.Resp;
 import com.mon.fpc.dto.ReplyDTO;
 import com.mon.fpc.dto.ShortPublishDTO;
+import com.mon.fpc.entity.Longs;
 import com.mon.fpc.entity.Replys;
 import com.mon.fpc.entity.Shorts;
 import com.mon.fpc.mapper.ReplysMapper;
@@ -43,6 +45,8 @@ public class ReplysController extends BaseController {
     @Resource
     private com.mon.fpc.service.ReplysService replysService;
     @Resource
+    private LongsService longsService;
+    @Resource
     private ReplysMapper replysMapper;
 
     @ApiOperation(value = "回复 该内容对应的类型:0-用户评论(回复用户时使用） 1-Longs 2-Shorts")
@@ -51,7 +55,10 @@ public class ReplysController extends BaseController {
         boolean exists = false;
         if (replyDTO.getToContextType() == 0) {
             exists = userService.lambdaQuery().eq(User::getUserId, getContextId(replyDTO.getToContextType(),replyDTO.getToContextId())).exists();
-        } else if (replyDTO.getToContextType() == 2) {
+        }else if(replyDTO.getToContextType()==1){
+            exists = longsService.lambdaQuery().eq(Longs::getId, replyDTO.getToContextId()).exists();
+        }
+        else if (replyDTO.getToContextType() == 2) {
             exists = shortsService.lambdaQuery().eq(Shorts::getId, replyDTO.getToContextId()).exists();
         }
         if (!exists) return error("回复失败");

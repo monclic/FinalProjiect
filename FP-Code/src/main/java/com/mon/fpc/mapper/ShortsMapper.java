@@ -24,4 +24,5 @@ import java.util.List;
 public interface ShortsMapper extends BaseMapper<Shorts> {
     List<ShortListItem> getList(Page<Shorts> pageInfo,@Param(Constants.WRAPPER) QueryWrapper<Shorts> queryWrapper);
 
+    List<ShortListItem> getPersonalShorts(Page<Shorts> pageInfo,Integer uid);
 }
