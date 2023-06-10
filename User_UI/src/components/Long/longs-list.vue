@@ -34,11 +34,15 @@
         <div class="tag_wrapper">
         <div @click="tag_long(item.tagName)" class="tag_list" v-for="(item, index) in tags">
           {{ item.tagName }}
-        </div></div>
+        </div>
+      </div>
+      <div class="search" style="margin-top: 50px;display: flex; flex-direction: row;">
+        <el-input v-model="input" placeholder="搜索..." @keyup.enter.native="select_long"/>
+        <!-- <button style="width: 50px;height: 30px;background-color: aqua;"></button> -->
+      </div>
         <div class="others">
           <div class="others_item" @click="to_pub">
             <span>点击发布</span>
-
           </div>
         </div>
       </div>
@@ -189,6 +193,19 @@ const tag_long=(tag:any)=>{
 onUnmounted(() => {
   observer.disconnect();
 });
+
+const input = ref('')
+const select_long=()=>{
+  const param = {info:input.value, PageNumber: 1, PageSize: 100 }
+  
+  http.get('/longs/s_long',param)
+  .then((data:any)=>{
+    state.items = [...data.list]
+      nextPageIs.value = data.nextPageIs
+    
+  })
+  input.value=''
+}
 </script>
     
 <style scoped>

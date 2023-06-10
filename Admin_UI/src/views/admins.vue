@@ -9,7 +9,7 @@
         <div v-for="(item,index) in users" class="list_user">
         <div class="item_user">
           <!-- <div class="avatar"></div> -->
-          <div class="username">111111</div>
+          <div class="username">{{ item.adminName }}</div>
           <!-- <div class="button">管理</div> -->
         </div>
         </div>

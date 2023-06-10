@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <header id="header">
+    <!-- <header id="header">
       <div @click="getName">FIRST</div>
       <div class="header-item" @click="to">
-        {{ name_space }}
+        {{ name_space }} -->
         <!-- <div class="name_utils">
           <div class="item">
             <div class="to_info" @click="to_info" style="padding-bottom: 5px;">个人信息</div>
@@ -11,9 +11,9 @@
             <div class="loginout" @click="loginout" style="padding-top: 5px;">登出</div>
           </div>
         </div> -->
-      </div>
+      <!-- </div> -->
       <!-- <router-link class="header-item" to="/login">{{ name_space }}</router-link> -->
-    </header>
+    <!-- </header> -->
     <router-view></router-view>
   </div>
 </template>

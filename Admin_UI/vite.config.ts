@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   server: {
-    port: 8088, // 设置端口号为8088
+    port: 8089, // 设置端口号为8088
     proxy: {
       "/api": { // “/api” 以及前置字符串会被替换为真正域名
         target: "http://127.0.0.1/", // 请求域名

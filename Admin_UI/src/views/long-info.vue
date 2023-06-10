@@ -17,7 +17,7 @@
                   <div @click="show_detail(item.id)" class="item-meta">{{ item.shortContent }}</div>
                 </div>
               </div>
-              <div class="utils">
+              <div style="display: none;" class="utils">
                 <!-- 点赞 -->
                 <div @click="setLike(2, item.id, index)" class="like">
                   <div v-show="item.likeIs" class="is_like">
@@ -95,7 +95,8 @@
   
   const router = useRouter();
   const show_detail = (id: String) => {
-    router.push('/longs/ldetail/' + id);
+    // router.push('/longs/ldetail/' + id);
+    window.open('http://127.0.0.1:8088/longs/ldetail/'+id,'_blank')
   
   }
   
@@ -127,8 +128,8 @@
   
   const getPage = async () => {
     currentPage.value++
-    const param = { PageNumber: currentPage.value.toString(), PageSize: PageSize.value}
-  
+    // const param = { PageNumber: currentPage.value.toString(), PageSize: PageSize.value}
+    const param = { PageNumber: 0, PageSize:100}
     http.get("/longs/LongList", param)
       .then((data: any) => {
         state.items = [...state.items, ...data.list]

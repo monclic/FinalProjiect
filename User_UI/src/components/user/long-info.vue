@@ -14,10 +14,10 @@
                     </div>
   
                   </div>
-                  <div @click="show_detail(item.id)" class="item-meta">{{ item.shortContent }}</div>
+                  <div @click="show_detail(item.id)" class="item-meta">{{ item.text }}</div>
                 </div>
               </div>
-              <div class="utils">
+              <div class="utils" style="display: none;">
                 <!-- 点赞 -->
                 <div @click="setLike(2, item.id, index)" class="like">
                   <div v-show="item.likeIs" class="is_like">

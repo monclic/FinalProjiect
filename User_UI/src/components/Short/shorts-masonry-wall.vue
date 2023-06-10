@@ -13,7 +13,7 @@
                 <div  class="item-info">
                   <div class="item-title">{{ item.username }}</div>
                   <div class="time" style="  font-size: 12.432px;">{{ item.createTime }}</div>
-                  <div class="item-meta">{{ item.shortContent }}</div>
+                  <div  class="item-meta">{{ item.shortContent }}</div>
                 </div>
                 <div  v-if="item.imagesIs" class="item-a">
                   <img :src="item.imagesList[0]">

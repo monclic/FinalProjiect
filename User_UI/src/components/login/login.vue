@@ -1,6 +1,9 @@
 <template>
     <div class="login-container">
-      <div class="login-wrapper">
+      <div class="login-title">
+       FIRST
+      </div>    
+      <div class="login-wrapper">       
         <div class="login-box">
           <div class="header">
             <div class="login">
@@ -103,7 +106,7 @@ setTimeout(() => {
   localStorage.setItem('token', '')
 }, expire) 
   
-    router.push('/')
+    router.push('/longs')
   })
   }
   
@@ -187,17 +190,22 @@ setTimeout(() => {
     flex-grow: 1;
     border-radius: 6px;
     padding: 10px;
-    /* border: 3px solid rgba(255, 255, 255, 0.5); */
+    flex-direction: column;
   }
-  
   .login-wrapper {
-    margin: auto;
+    margin: 0 auto;
     height: 350px;
     /* width: 300px; */
     border-radius: 6px;
     border: 10px solid rgba(255, 255, 255, 0.5);
+    /* display: flex; */
   }
-  
+  .login-title{
+    margin: 100px auto 20px;
+    font-size: 220%;
+    color: #7a8998;
+  }
+
   .login-box {
     background-color: #fff;
     height: 100%;

@@ -49,7 +49,7 @@ class Http {
     // 访问 this.token 时，实际上是在调用 get token() 方法，该方法会返回本地存储中的 token 值。
     private get token(): string | null {
         // 这里返回本地存储中的 token，如果不存在则返回 null
-        return localStorage.getItem('token');
+        return localStorage.getItem('token_admin');
     }
 
     public async get(url: string, params?: any, config?: AxiosRequestConfig): Promise<any> {

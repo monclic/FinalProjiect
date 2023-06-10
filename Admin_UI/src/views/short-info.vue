@@ -98,7 +98,7 @@ const PageSize = ref(5)
 
 const router = useRouter();
 const show_detail = (id: String) => {
-  router.push('/shorts/sdetail/' + id);
+  window.open('http://127.0.0.1:8088/shorts/sdetail/'+id,'_blank')
 
 }
 

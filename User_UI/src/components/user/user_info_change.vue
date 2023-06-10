@@ -77,8 +77,8 @@
                         placeholder="请输入email">
                     <div class="login-sms-wp__vertical-line"></div>
                     <div @click="getCode(1)"
-                        :class="{ 'login-sms-send': true, 'clickable': true, 'disable': !email_is || countdown > 0 }">
-                        {{ countdown > 0 ? countdown + '秒' : buttonText }}
+                        :class="{ 'login-sms-send': true, 'clickable': true, 'disable': !email_is }">
+                        {{ buttonText }}
                     </div>
                 </div>
                 <div class="form__separator-line"></div>
@@ -94,8 +94,8 @@
                         placeholder="请输入email">
                     <div class="login-sms-wp__vertical-line"></div>
                     <div @click="getCode(2)"
-                        :class="{ 'login-sms-send': true, 'clickable': true, 'disable': !email_new_is || countdown > 0 }">
-                        {{ countdown > 0 ? countdown + '秒' : buttonText }}
+                        :class="{ 'login-sms-send': true, 'clickable': true, 'disable': !email_new_is}">
+                        {{ buttonText }}
                     </div>
                 </div>
                 <div class="form__separator-line"></div>
@@ -180,7 +180,7 @@ const pwd_old = ref('')
 const pwd_new = ref('')
 const change_email_step = ref(true)
 const change_pwd = () => {
-    let params = { oldPwd: pwd_old.value, newPwd: pwd_new }
+    let params = { oldPwd: pwd_old.value, newPwd: pwd_new.value }
     http.post('/user/changePwd', params)
 
     centerDialogVisible4.value = false
@@ -228,7 +228,6 @@ const getCode = (type:number) => {
     // 页面显示
     if (countdown.value === 0) {
         countdown.value = 60;
-        buttonText.value = countdown.value + '秒';
 
         timer = setInterval(() => {
             countdown.value--;
@@ -236,10 +235,8 @@ const getCode = (type:number) => {
             if (countdown.value === 0) {
                 clearInterval(timer!);
                 timer = null;
-                buttonText.value = '重新发送';
-            } else {
-                buttonText.value = countdown.value + '秒';
-            }
+                buttonText.value = '获取验证码';
+            } 
         }, 1000);
     }
 

@@ -39,9 +39,9 @@
                     <div class="bili-emoji">
                         <div class="bili-emoji__content">
                             <ul class="bili-emoji__list" style="overflow: auto;">
-                                <li v-for="(emoji, index) in emojis" @click="insertImage" :key="index"
+                                <li v-for="(emoji, index) in emojis" @click="insertImage(emoji.id)" :key="index"
                                     class="bili-emoji__list__item bili-emoji__list__item small">
-                                    <img src="../../public/emoji/i_f01.png" alt="11">
+                                    <img :src="emoji.id" alt="">
                                 </li>
                                 <li></li>
                             </ul>
@@ -62,6 +62,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import http from '../../utils/http';
+import { url } from 'inspector';
 export default defineComponent({
     name: 'short_publish',
 
@@ -85,9 +86,10 @@ interface Iamge {
     order: number,
     url: String;
 }
-// 图片列表
+// 缩略图列表
 const images = ref<Iamge[]>([])
-
+// 图片列表
+const images_list = ref<Iamge[]>([])
 function dialogShow() {
     dialogTableVisible.value = true
 }
@@ -158,6 +160,7 @@ function handleClick() {
 const removeById = (id: number) => {
     if (id !== -1) {
         images.value.splice(id - 1, 1);
+        images_list.value.splice(id - 1, 1);
     }
 }
 // 点击图片上传框进行上传
@@ -202,24 +205,32 @@ function uploadImage(index: number) {
 
                 // 获取图片的 base64 数据 URI
                 const dataURI = canvas.toDataURL('image/jpeg');
-
                 images.value.push({ order: index + 1, url: dataURI })
+
+                const formData = new FormData();
+                formData.append('file', fileData); // 假设 fileData 是上传的文件数据
+
+                http.post('/user/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data' // 指定请求体的内容类型为 multipart/form-data
+                    }
+                }).then((data:any)=>{                    
+                    images_list.value.push({ order: index + 1, url: data.goods })
+                })
+                
             }
         }
     })
 }
 const emojis = ref([
-    { id: 'i_f01.png', alt: 1 },
-    { id: 'i_f02.png', alt: 2 },
-    { id: 'i_f03.png', alt: 3 },
-    { id: 'i_f04.png', alt: 4 },
-    { id: 'i_f05.png', alt: 5 },
-    { id: 'i_f06.png', alt: 6 },
-    { id: 'i_f07.png', alt: 7 },
-    { id: 'i_f08.png', alt: 8 },
-    { id: 'i_f09.png', alt: 9 },
-    { id: 'i_f10.png', alt: 10 },
-    { id: 'i_f11.png', alt: 11 }])
+    { id: 'http://127.0.0.1/imgs/i_f01.png', alt: 1 },
+    { id: 'http://127.0.0.1/imgs/i_f02.png', alt: 2 },
+    { id: 'http://127.0.0.1/imgs/i_f03.png', alt: 3 },
+    { id: 'http://127.0.0.1/imgs/i_f04.png', alt: 4 },
+    { id: 'http://127.0.0.1/imgs/i_f05.png', alt: 5 },
+    { id: 'http://127.0.0.1/imgs/i_f06.png', alt: 6 },
+    { id: 'http://127.0.0.1/imgs/i_f07.png', alt: 7 },
+    { id: 'http://127.0.0.1/imgs/i_f08.png', alt: 8 }])
 
 const emojisClick = () => {
     isEmojiActive.value = !isEmojiActive.value;
@@ -237,7 +248,7 @@ function saveSelection() {
     //不能保存当前的 window.getSelection()，因为点击空白处时会被重置
 }
 
-function insertImage() {
+function insertImage(emoji:string) {
     const selection = window.getSelection();
     if (!selection) return;
     if (selection.rangeCount == 0
@@ -259,7 +270,7 @@ function insertImage() {
         let range = savedRange;
         if (!range) range = selection?.getRangeAt(0);
         const insertNode = document.createElement('img');
-        insertNode.src = 'path/to/image.png';
+        insertNode.src = emoji;
 
         // 插入图片
         range.insertNode(insertNode);
@@ -282,7 +293,7 @@ function insertImage() {
     // 输入框未获得焦点
     function noFcous(selection: Selection) {
         const insertNode = document.createElement('img');
-        insertNode.src = 'path/to/image.png';
+        insertNode.src = emoji;
         // console.log(savedSelection);  
         const divA = editor.value;
         if (selection.rangeCount == 0) {
@@ -332,19 +343,19 @@ const publish = async () => {
     try {
         const content = editor.value?.innerHTML
         // editor.value!.innerHTML=content+"22"
-        const imageUrls = images.value
+        const imageUrls = images_list.value
             .sort((a, b) => a.order - b.order) // 按 order 升序排序
             .map(image => image.url) // 取出每个对象的 url 属性
             .join(",")
 
-        if(content==""&&imageUrls=="") return
+        if (content == "" && imageUrls == "") return
         const param = { context: content, images: imageUrls }
         await http.post("/shorts/ShortPublish", param)
-        .then(
-            // 报错无影响
-            editor.value!.innerHTML=""
+            .then(
+                // 报错无影响
+                editor.value!.innerHTML = ""
 
-        )
+            )
         // 在这里对返回值进行处理
     } catch (error) {
         console.error(error);

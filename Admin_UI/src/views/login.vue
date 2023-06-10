@@ -58,7 +58,7 @@
     let params={id:email.value,pwd:pwd.value}
   http.post('/admin/AccountLogin',params)
   .then((data:any)=>{  
-    localStorage.setItem('token',data.token)   
+    localStorage.setItem('token_admin',data.token)   
 
   
     router.push('/board')

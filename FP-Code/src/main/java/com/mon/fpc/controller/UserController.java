@@ -305,16 +305,18 @@ public class UserController extends BaseController {
                 .set(User::getUserAvatar,img)
                 .eq(User::getUserId,LoginUserHolder.get(User.class).getUserId())
                 .update();
-        return success();
+        CommonTypeVo<String> stringCommonTypeVo = new CommonTypeVo<>();
+        stringCommonTypeVo.setGoods(img);
+        return success(stringCommonTypeVo);
     }
 
     @ApiOperation(value = "更换邮箱")
     @PostMapping("/changeEmail")
-    public Resp changeEmail(ChangeEmailDTO changeEmailDTO){
+    public Resp changeEmail(@RequestBody ChangeEmailDTO changeEmailDTO){
         Optional<Object> oldO = RedisUtil.get(RedisKeyEnum.USER_CHANGE_EMAIL_OLD_CODE, changeEmailDTO.getOldEmail());
         Optional<Object> newO = RedisUtil.get(RedisKeyEnum.USER_CHANGE_EMAIL_NEW_CODE, changeEmailDTO.getNewEmail());
 
-        if (!oldO.isPresent()||newO.isPresent()){
+        if (!oldO.isPresent()||!newO.isPresent()){
             return error("");
         }
         String oldCOde = (String) oldO.get();
@@ -333,7 +335,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "原邮箱发验证码")
     @PostMapping("/sendCode_changeEmail")
-    public Resp sendCode_changeEmail(String email_old){
+    public Resp sendCode_changeEmail(@RequestBody String email_old){
         boolean checkEmail = VerifyUtil.checkEmail(email_old);
         if (!checkEmail) return error("请输入正确的email地址");
         boolean exists = userService.lambdaQuery()
@@ -353,7 +355,7 @@ public class UserController extends BaseController {
     }
     @ApiOperation(value = "新邮箱换验证码")
     @PostMapping("/sendCode_changeEmail_new")
-    public Resp sendCode_changeEmail_new(String email_new){
+    public Resp sendCode_changeEmail_new(@RequestBody String email_new){
         boolean checkEmail = VerifyUtil.checkEmail(email_new);
         if (!checkEmail) return error("请输入正确的email地址");
         boolean exists = userService.lambdaQuery()
@@ -387,16 +389,16 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "更新密码")
     @PostMapping("/changePwd")
-    public Resp changePwd(ChangePwdDTO changePwdDTO){
+    public Resp changePwd(@RequestBody ChangePwdDTO changePwdDTO){
         Integer userId = LoginUserHolder.get(User.class).getUserId();
 
         boolean exists = userService.lambdaQuery()
-                .eq(User::getUserPwd, BCrypt.hashpw(changePwdDTO.getOldPwd()))
+                .eq(User::getUserId,userId)
                 .exists();
         if (!exists)return error("");
 
         userService.lambdaUpdate()
-                .set(User::getUserPwd,changePwdDTO.getNewPwd())
+                .set(User::getUserPwd,BCrypt.hashpw(changePwdDTO.getNewPwd()))
                 .eq(User::getUserId,userId)
                 .update();
         return success();

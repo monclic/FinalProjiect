@@ -115,9 +115,11 @@ const confirm_do=()=>{
 
 const editor=()=>{
   if(text.value=='')return
-
-  let params={text:text.value,tags:dynamicTags.value.join(" "),type:confirm_ype.value}
+  let type_t=1;
+  if(confirm_ype.value==1)type_t=0
+  let params={text:text.value,tags:dynamicTags.value.join(" "),type:type_t}
   http.post('/longs/LongPublish',params)
+  
 }
 const cancel=()=>{
   text.value=''

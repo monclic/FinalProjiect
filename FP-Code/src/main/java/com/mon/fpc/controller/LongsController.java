@@ -91,7 +91,6 @@ public class LongsController extends BaseController {
         longs.setUserId(user.getUserId());
         longs.setText(longsPublishDTO.getText());
         longs.setArticleStatus(longsPublishDTO.getType());
-        longs.setArticleStatus(1);
         if (!longsPublishDTO.getTags().equals(""))
             longs.setTags((longsPublishDTO.getTags()));
 
@@ -206,6 +205,33 @@ public class LongsController extends BaseController {
 
         QueryWrapper<Shorts> queryWrapper = new QueryWrapper<>();
         queryWrapper.last("and s.tags like '%"+tag+"%'");
+
+        List<LongListItem> list = longsMapper.getList(pageInfo, queryWrapper);
+
+        for (LongListItem i:list){
+            if (!i.getTags().equals("")) {
+
+                String[] s = Arrays.stream(i.getTags().split(" "))
+                        .toArray(String[]::new);
+
+                i.setTagsList(s);
+            }
+        }
+
+        LongsListVO longsListVO = new LongsListVO();
+        longsListVO.setList(list);
+        longsListVO.setNextPageIs(PageUtils.isNextPage(pageInfo));
+        return success(longsListVO);
+    }
+
+    @ApiOperation(value = "查询")
+    @GetMapping("/s_long")
+    public Resp s_long(String  info,String PageNumber, String PageSize) {
+        Page<Shorts> pageInfo = new Page<>(Long.parseLong(PageNumber), Long.parseLong(PageSize));
+
+
+        QueryWrapper<Shorts> queryWrapper = new QueryWrapper<>();
+        queryWrapper.last("and s.text like '%"+info+"%'");
 
         List<LongListItem> list = longsMapper.getList(pageInfo, queryWrapper);
 

@@ -22,7 +22,7 @@
 import { ref } from 'vue';
 import U_Nav from './user-nav.vue'
 
-const title=ref('short')
+const title=ref('')
 const handleToggleDiv = (payload:any) => {
   // 处理来自 b.vue 的自定义事件
   // 在此处根据需求修改 div.e 的显示或隐藏逻辑
